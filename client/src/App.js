@@ -12,47 +12,47 @@ import Register from './Pages/Register'
 import SpeedScrabble from './Pages/SpeedScrabble'
 import Help from './Pages/Help'
 
-import './app.css'
+import 'app.css'
 
 function App() {
   return (
     <Router>
-    <Switch>
-      <Route exact path="/">
-        <Navbar/>
-        <Home />
-      </Route>
-    </Switch>
-    
-    <Switch>
-      <Route exact path="/login">
-        <Navbar/>
-        <Login />
-      </Route>
-    </Switch>
-    
-    <Switch>
-      <Route exact path="/register">
-        <Navbar/>
-        <Register />
-      </Route>
-    </Switch>
+      <Switch>
+        <Route exact path="/">
+          <Navbar/>
+          <Home />
+        </Route>
+      </Switch>
+      
+      <Switch>
+        <Route exact path="/login">
+          <Navbar/>
+          <Login />
+        </Route>
+      </Switch>
+      
+      <Switch>
+        <Route exact path="/register">
+          <Navbar/>
+          <Register />
+        </Route>
+      </Switch>
 
-    <Switch>
-      <Route exact path="/speedscrabble">
-        <LoggedInNav/>
-        <SpeedScrabble/>
-      </Route>
-    </Switch>
+      <Switch>
+        <Route exact path="/speedscrabble">
+          <LoggedInNav/>
+          <SpeedScrabble/>
+        </Route>
+      </Switch>
 
-    <Switch>
-      <Route exact path="/help">
-        <LoggedInNav/>
-        <Help/>
-      </Route>
-    </Switch>
+      <Switch>
+        <Route exact path="/help">
+          <LoggedInNav/>
+          <Help/>
+        </Route>
+      </Switch>
 
-  </Router>
+    </Router>
   );
 }
 

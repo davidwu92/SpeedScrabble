@@ -1,7 +1,6 @@
 import React from 'react'
 // import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import './loggedInNav.css'
 
 const LoggedinNav = () => {
 
@@ -13,7 +12,7 @@ const LoggedinNav = () => {
   return (
     <nav id="bottomNav" className="nav-extended black">
       <div className="nav-wrapper" id="navWrapper">
-      <div className="brand-logo" style={window.screen.width < 996 ? null:{paddingLeft:"20px"}}>Speed Scrabble</div>
+      <div className="brand-logo" id="navTitle">Speed Scrabble</div>
       </div>
       <div className="nav-content">
         <ul className="tabs tabs-transparent">

@@ -5,6 +5,7 @@ const app = express()
 // passport modules
 const passport = require('passport')
 const { Strategy } = require('passport-local')
+
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const {User} = require('./models')
 const { Strategy: JWTStrategy, ExtractJwt } = require('passport-jwt')

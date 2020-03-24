@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 //MONGODB
-const mongoURI = process.env.NODE_ENV === 'production' ? process.env.MONGODB_URI : 'mongodb://localhost/paymentTrackerdb'
+const mongoURI = process.env.NODE_ENV === 'production' ? process.env.MONGODB_URI : 'mongodb://localhost/speedscrabbledb'
 const mongoose = require('mongoose')
 const conn = mongoose.createConnection(mongoURI, {
   // these methods are rarely used

@@ -10,6 +10,7 @@ import Home from './Pages/Home'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
 import SpeedScrabble from './Pages/SpeedScrabble'
+import Multiplayer from './Pages/Multiplayer'
 import Help from './Pages/Help'
 
 import './App.css'
@@ -42,6 +43,13 @@ function App() {
         <Route exact path="/speedscrabble">
           <LoggedInNav/>
           <SpeedScrabble/>
+        </Route>
+      </Switch>
+
+      <Switch>
+        <Route exact path="/multiplayer">
+          <LoggedInNav/>
+          <Multiplayer/>
         </Route>
       </Switch>
 

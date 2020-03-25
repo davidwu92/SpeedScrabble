@@ -37,7 +37,8 @@ const SpeedScrabble = () => {
       ["Null","Null","Null","Null","Null","Null","Null","Null","Null","Null"],
     ]
   )
-  // https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_ondragstart
+  //DRAG-DROP EXAMPLES https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_ondragstart
+  
   const allowDrop = e=>e.preventDefault()
   
   //HAND or GRID: Starting to drag a tile.
@@ -49,7 +50,6 @@ const SpeedScrabble = () => {
   }
   //HAND or GRID: Allow things to drag over.
   const dragOver = e => e.stopPropagation()
-  
   
   //GRID: dropping tiles onto grid (from anywhere)
   const dropTile = e => { //e represents the grid event of DROPPING A TILE.
@@ -93,20 +93,61 @@ const SpeedScrabble = () => {
       {autoClose: 9000,hideProgressBar: true,type: "error"})
     }
   }
+  
+  const [swapCount, setSwapCount] = useState(3)
+  //SWAP BOX: dropping a tile into the swap-tile area.
+  const swapOneTile = e =>{
+    if(swapCount>0){
+      e.preventDefault()
+      setSwapCount(swapCount=>swapCount-1)
+      let tileData=e.dataTransfer.getData("tile")
+      let startPosition = e.dataTransfer.getData("coordinates") //"undefined" if tile grabbed from hand.
+
+      let handNum = tileData[2] ? parseInt(""+tileData[1]+tileData[2]):parseInt(tileData[1])
+      let bagLetters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
+      //take out my hand's letters from the bag.
+      handLetters.forEach((letter, index)=>{
+        bagLetters = bagLetters.replace(letter, "")
+      })
+      //pick a letter from the remaining letters to replace the swapped tile.
+      let newLetterIndex = Math.floor(Math.random()*(98-handLetters.length))
+      let newHand = handLetters
+      newHand[handNum] = bagLetters[newLetterIndex] //this is new letter.
+      setHandLetters(JSON.parse(JSON.stringify(newHand)))
+
+      //time penalty
+      if(tileData[0]==bagLetters[newLetterIndex]){setSeconds(seconds=>seconds+3)}
+
+      // console.log(bagLetters[newLetterIndex]+handNum)
+      if(startPosition!="undefined"){
+        let newGrid = grid
+        newGrid[startPosition[1]][startPosition[0]] = bagLetters[newLetterIndex]+handNum
+        setGrid(JSON.parse(JSON.stringify(newGrid)))
+      }
+      toast(<>{tileData[0]==bagLetters[newLetterIndex]? <>No time penalty applied.<br/>You swapped a "{tileData[0]}" for another "{bagLetters[newLetterIndex]}". <br/>{swapCount} letter swaps left.</>
+        :<>3 second penalty applied.<br/>You swapped a "{tileData[0]}" for a "{bagLetters[newLetterIndex]}."<br/>{swapCount} letter swaps left.</>}</>,
+      {autoClose: 9000,hideProgressBar: true,type: "success"})
+    }
+  }
+
 
 //MY HAND
-  const [handLetters, setHandLetters] = useState( //Letters in my hand.
-    ["_", "Y", "O", "U", "R", "_", "_", "H", "A", "N", "D","_"]
-  )
-  const [handUsed, setHandUsed] = useState( //Used Letters from my hand.
-    [false,false,false,false,false,false,false,false,false,false,false,false,]
-  )
-  
+  //Letters in my hand.
+  const [handLetters, setHandLetters] = useState(["_", "Y", "O", "U", "R", "_", "_", "H", "A", "N", "D","_"])
+  //Used Letters from my hand.
+  const [handUsed, setHandUsed] = useState([false,false,false,false,false,false,false,false,false,false,false,false,])
+
+  //currently not using this.
   const shuffleHand = () =>{
     console.log("SHUFFLE HAND")
+    //time penalty: 3 seconds.
+    setSeconds(seconds=>seconds+3)
   }
+
+//NEW GAME BUTTON
   const newGame = () =>{
-    //Start Timer, reset grid, deal tiles for hand.
+    //Start Timer from zero, reset grid, deal tiles for hand.
+    setSeconds(0)
     setIsRunning(true)
     setGrid([ ["Null","Null","Null","Null","Null","Null","Null","Null","Null","Null"],
       ["Null","Null","Null","Null","Null","Null","Null","Null","Null","Null"],
@@ -122,16 +163,17 @@ const SpeedScrabble = () => {
     let scrabbleLetters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
     let numbers = []
     let newHand = []
-    for (let i = 0; i<12;i++){
-      let randomNumber = Math.floor(Math.random()*98)
-      while (numbers.includes(randomNumber))
-      {randomNumber = Math.floor(Math.random()*98)}
-      numbers.push(randomNumber)
-      newHand.push(scrabbleLetters[randomNumber])
+    for (let i = 0; i<handLetters.length;i++){
+      let letterNumber = Math.floor(Math.random()*98) //scrabbleLetters has length 98
+      //if letterNumber was already chosen, randomize again.
+      while (numbers.includes(letterNumber)){letterNumber = Math.floor(Math.random()*98)}
+      numbers.push(letterNumber)
+      newHand.push(scrabbleLetters[letterNumber])
     }
     setHandLetters(newHand)
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
+
   const testButton = () => {
     console.log(handUsed)
   }
@@ -143,40 +185,46 @@ const SpeedScrabble = () => {
     <>
       <div className="container">
         <h1 className="center">Speed Scrabble</h1>
-        <button className="btn black" onClick={newGame}>NEW GAME</button>
+        <button className="btn black" onClick={newGame}>START</button>
       </div>
         <button onClick={testButton}>TEST</button>
         <button onClick={seeData}>SEE GRID</button>
-      {/* <div className="row"> */}
-      {/* </div> */}
+
         {/* GAME */}
-        <div className="row white" style={{width: "100%", margin:"0px"}}>
+        <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
           
           {/* MY HAND */}
-          <div className="col s12 m4 l4 center">
-            <h6 className="center">Your Hand</h6>
-            <button className="btn" onClick={shuffleHand}>Shuffle All Tiles</button>
-            <br></br>
-            <br></br>
-            {handLetters.map((tile, index)=>
-              <div 
-                draggable="true"
-                onDragStart={dragStart}
-                onDragOver={dragOver}
-                // onDragEnd={dragEnd}
-                data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
-                id="handTile"
-                className="center" 
-                style={!handUsed[index] ? {backgroundColor: "red", margin:"2px", 
-                        width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset"}
-                      :{backgroundColor: "grey", margin:"2px",
-                        width:"4vw", height:"4vw", display:"inline-block", borderStyle:"outset"}}>
-                <h5 className="white-text">{tile}</h5>
-              </div>)}
+          <div className="col s12 m5 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
+            <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
+              {/* <button className="btn btn-small" onClick={shuffleHand}>Shuffle</button> */}
+              <h6>Swaps left: {swapCount}</h6>
+              <div id="swapTile" className="valign-wrapper"
+                onDrop={swapOneTile}
+                onDragOver={allowDrop}
+              ><h5 className="white-text">TILE SWAP</h5>
+              </div>
+            </div>
+            <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
+              <h6>Your Hand</h6>
+              {handLetters.map((tile, index)=>
+                <div 
+                  draggable={!handUsed[index]}
+                  onDragStart={dragStart}
+                  onDragOver={dragOver}
+                  data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
+                  id="handTile"
+                  className="center" 
+                  style={!handUsed[index] ? {backgroundColor: "red", margin:"2px", padding:"1vw",
+                          width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset"}
+                        :{backgroundColor: "grey", margin:"2px",padding:"1vw",
+                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"outset"}}>
+                  <h5 className="white-text">{tile}</h5>
+                </div>)}
+            </div>
           </div>
 
           {/* GRID BOARD */}
-          <div className="col s12 m7 l7">
+          <div className="col s12 m6 l6 center">
             {grid.map((row, rowNum)=>(
               <div id="gridRow" 
                 // className="center"
@@ -185,14 +233,13 @@ const SpeedScrabble = () => {
                   (<div className="gridSquare" 
                         draggable={square=="Null"? false : true}
                         onDragStart={dragStart}
-                        // onDragEnd={dragEnd}
                         onDrop={dropTile}
                         onDragOver={allowDrop}
                         onClick={seeData}
                         id="gridSquare"
                         data-tile={square} //dataset.tile = LETTER+HAND NUMBER or "NULL"
                         data-coordinates={""+colNum+rowNum}
-                        style={{backgroundColor: square=="Null"? "floralwhite":"red", width:"4vw", height:"4vw",
+                        style={{backgroundColor: square=="Null"? "floralwhite":"red", width:"4vw", height:"4vw", padding:"1vw",
                               display:"inline-block", borderStyle: square=="Null"?"dashed":"outset", borderWidth:"1px"}}>
                       <h5 data-tile={square} data-coordinates={""+colNum+rowNum} className="center white-text"
                           style={square=="Null"? {visibility:"hidden"}:{visibility:"visible"}}>
@@ -203,10 +250,11 @@ const SpeedScrabble = () => {
           </div>
 
           {/* TIMER */}
-          <div className="col s6 m1 l1">
-            <h3>{seconds}</h3>
-            <button className="btn" onClick={()=>setIsRunning(true)}>Start Clock</button>
-            <button className="btn" onClick={()=>setIsRunning(false)}>Pause Clock</button>
+          <div className="col s12 m1 l1">
+            <h6 className="center">Game Time</h6>
+            <h6 className="center">{seconds}</h6>
+            {/* <button className="btn" onClick={()=>setIsRunning(true)}>Start Clock</button> */}
+            {/* <button className="btn" onClick={()=>setIsRunning(false)}>Pause Clock</button> */}
           </div>
 
         </div> {/* END GAME CONTAINER */}

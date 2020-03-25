@@ -1,17 +1,30 @@
-
+h5 {
+  margin:0px
+}
 
 /* SMALL SCREEN STYLING */
 @media only screen 
 and (min-device-width : 300px) 
 and (max-device-width : 995px){
   #handTile, #gridSquare{
-    width: 9.4vw !important;
-    height: 9.4vw !important;
+    width: 8.5vw !important;
+    height: 8.5vw !important;
+    padding: 1vw !important;
+    margin: 1 !important;
+    /* border: 1px !important; */
   }
   #gridRow {
-    height: 9.4vw
+    height: 8.5vw
+  }
+  #swapTile {
+    background-color: green;
+    width: 17vw !important;
+    height: 17vw !important;
+    position: relative;
+    left: 30%;
   }
 }
+
 /* NORMAL SCREEN STYLING */
 @media only screen 
 and (min-device-width : 996px){
@@ -21,5 +34,12 @@ and (min-device-width : 996px){
   }
   #gridRow {
     height: 4vw
+  }
+  #swapTile {
+    background-color: green;
+    width: 8vw !important;
+    height: 8vw !important;
+    position: relative;
+    left: 25%;
   }
 }

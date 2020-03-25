@@ -6,8 +6,9 @@ module.exports = app => {
   // Register new user
   app.post('/users', (req, res) => {
       const { username, email } = req.body
+      const scores = []
       //setting default preferences here.
-      User.register(new User({username, email}), req.body.password,
+      User.register(new User({username, email, scores}), req.body.password,
         e=>{
           if (e){console.error(e)}
           res.sendStatus(200)

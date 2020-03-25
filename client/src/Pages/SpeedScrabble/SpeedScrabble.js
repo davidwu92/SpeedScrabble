@@ -1,12 +1,27 @@
 import React, {useState, useEffect} from 'react'
-import moment from 'moment'
+// import moment from 'moment'
 import './speedScrabble.css'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UserAPI from '../../utils/UserAPI'
 
+const { getUser } = UserAPI
 
 const SpeedScrabble = () => {
   toast.configure()
+  //on pageload, get user info for My past scores.
+  const [username, setUsername]=useState("scrabbler")
+  const [myScores, setMyScores]=useState([])
+  let token = JSON.parse(JSON.stringify(localStorage.getItem("token")))
+  useEffect(()=>{
+    getUser(token)
+      .then(({data})=>{
+        setUsername(data.username)
+        setMyScores(data.scores)
+      })
+      .catch(e=>console.error(e))
+  },[])
+
 
   //GAME TIMER
   const [seconds, setSeconds] = useState(0)
@@ -135,6 +150,8 @@ const SpeedScrabble = () => {
   const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "S", "T", "A", "R", "T","!"])
   //Used Letters from my hand.
   const [handUsed, setHandUsed] = useState([true,true,true,true,true,true,true,true,true,true,true,true,])
+  //Starting Hand tracked for final score?
+  const [startingHand, setStartingHand] = useState("")
 
   //currently not using this.
   const shuffleHand = () =>{
@@ -171,6 +188,7 @@ const SpeedScrabble = () => {
       newHand.push(scrabbleLetters[letterNumber])
     }
     setHandLetters(newHand)
+    setStartingHand(newHand.join(''))
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
 
@@ -205,7 +223,7 @@ const SpeedScrabble = () => {
               </div>
             </div>
             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
-              <h5>Your Hand</h5>
+              <h5>{username}'s hand</h5>
               {handLetters.map((tile, index)=>
                 <div 
                   draggable={!handUsed[index]}
@@ -224,7 +242,7 @@ const SpeedScrabble = () => {
           </div>
 
           {/* GRID BOARD */}
-          <div className="col s12 m7 l7 center">
+          <div className="col s12 m6 l6 center">
             {grid.map((row, rowNum)=>(
               <div id="gridRow" 
                 // className="center"
@@ -247,6 +265,17 @@ const SpeedScrabble = () => {
                     </div>))}
               </div>
             ))}
+          </div>
+          
+          <div className="col s12 m1 l1 center">
+            <h5>{username}</h5>
+            <h6>Score History</h6>
+            {myScores.length ? myScores.map(score=>(
+              <>
+                <ul>{score}</ul>
+              </>
+              ))
+              :null}
           </div>
         </div> {/* END GAME CONTAINER */}
         

@@ -185,7 +185,7 @@ const SpeedScrabble = () => {
   return(
     <>
       <div className="container">
-        <h1 className="center">Speed Scrabble</h1>
+        <h3 className="center">Speed Scrabble</h3>
         <button className="btn black" onClick={newGame}>START</button>
       </div>
         <button onClick={testButton}>TEST</button>
@@ -199,6 +199,7 @@ const SpeedScrabble = () => {
             <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
               {/* <button className="btn btn-small" onClick={shuffleHand}>Shuffle</button> */}
               <h5>Swaps left: {swapCount}</h5>
+              <br></br>
               <div id="swapTile" className="valign-wrapper"
                 onDrop={swapOneTile}
                 onDragOver={allowDrop}
@@ -207,6 +208,7 @@ const SpeedScrabble = () => {
             </div>
             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
               <h5>Your Hand</h5>
+              <br></br>
               {handLetters.map((tile, index)=>
                 <div 
                   draggable={!handUsed[index]}
@@ -252,8 +254,8 @@ const SpeedScrabble = () => {
 
           {/* TIMER */}
           <div className="col s12 m1 l1">
-            <h6 className="center">Game Time</h6>
-            <h6 className="center">{seconds}</h6>
+            {/* <h6 className="center">Game Time</h6> */}
+            <h5 className="center">Time: {seconds}</h5>
             {/* <button className="btn" onClick={()=>setIsRunning(true)}>Start Clock</button> */}
             {/* <button className="btn" onClick={()=>setIsRunning(false)}>Pause Clock</button> */}
           </div>

@@ -106,9 +106,7 @@ const SpeedScrabble = () => {
       let handNum = tileData[2] ? parseInt(""+tileData[1]+tileData[2]):parseInt(tileData[1])
       let bagLetters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
       //take out my hand's letters from the bag.
-      handLetters.forEach((letter, index)=>{
-        bagLetters = bagLetters.replace(letter, "")
-      })
+      handLetters.forEach(letter=> bagLetters = bagLetters.replace(letter, ""))
       //pick a letter from the remaining letters to replace the swapped tile.
       let newLetterIndex = Math.floor(Math.random()*(98-handLetters.length))
       let newHand = handLetters
@@ -127,7 +125,7 @@ const SpeedScrabble = () => {
       toast(<>{tileData[0]==bagLetters[newLetterIndex]? 
         <>You swapped your "{tileData[0]}" for another "{bagLetters[newLetterIndex]}".<br/>No time penalty applied.</>
         :<>You swapped your "{tileData[0]}" for {"AEFHILMNORSX".includes(bagLetters[newLetterIndex])? <>an "{bagLetters[newLetterIndex]}".</>:<>a "{bagLetters[newLetterIndex]}".</>}<br/>3 second penalty applied.</>}</>,
-      {autoClose: 9000,hideProgressBar: true,type: "success"})
+      {autoClose: 5000,hideProgressBar: true,type: "success"})
     }
   }
 
@@ -148,6 +146,7 @@ const SpeedScrabble = () => {
 //NEW GAME BUTTON
   const newGame = () =>{
     //Start Timer from zero, reset grid, deal tiles for hand.
+    setSwapCount(3)
     setSeconds(0)
     setIsRunning(true)
     setGrid([ ["Null","Null","Null","Null","Null","Null","Null","Null","Null","Null"],
@@ -186,20 +185,19 @@ const SpeedScrabble = () => {
     <>
       <div className="container">
         <h3 className="center">Speed Scrabble</h3>
-        <button className="btn black" onClick={newGame}>START</button>
+        <button className="btn pink" onClick={newGame}>START GAME</button>
+        <h5 className="right">Game Time: {seconds}</h5>
       </div>
         <button onClick={testButton}>TEST</button>
         <button onClick={seeData}>SEE GRID</button>
-
+        <br></br>
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
           
           {/* MY HAND + TILESWAP */}
           <div className="col s12 m5 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
             <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
-              {/* <button className="btn btn-small" onClick={shuffleHand}>Shuffle</button> */}
-              <h5>Swaps left: {swapCount}</h5>
-              <br></br>
+              <h5>{swapCount} swaps left.</h5>
               <div id="swapTile" className="valign-wrapper"
                 onDrop={swapOneTile}
                 onDragOver={allowDrop}
@@ -208,7 +206,6 @@ const SpeedScrabble = () => {
             </div>
             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
               <h5>Your Hand</h5>
-              <br></br>
               {handLetters.map((tile, index)=>
                 <div 
                   draggable={!handUsed[index]}
@@ -227,7 +224,7 @@ const SpeedScrabble = () => {
           </div>
 
           {/* GRID BOARD */}
-          <div className="col s12 m6 l6 center">
+          <div className="col s12 m7 l7 center">
             {grid.map((row, rowNum)=>(
               <div id="gridRow" 
                 // className="center"
@@ -251,15 +248,6 @@ const SpeedScrabble = () => {
               </div>
             ))}
           </div>
-
-          {/* TIMER */}
-          <div className="col s12 m1 l1">
-            {/* <h6 className="center">Game Time</h6> */}
-            <h5 className="center">Time: {seconds}</h5>
-            {/* <button className="btn" onClick={()=>setIsRunning(true)}>Start Clock</button> */}
-            {/* <button className="btn" onClick={()=>setIsRunning(false)}>Pause Clock</button> */}
-          </div>
-
         </div> {/* END GAME CONTAINER */}
         
         <div className="row">

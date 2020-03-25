@@ -12,7 +12,7 @@ const LoggedinNav = () => {
   return (
     <nav id="bottomNav" className="nav-extended black">
       <div className="nav-wrapper" id="navWrapper">
-      <div className="brand-logo" id="navTitle">Speed Scrabble</div>
+      <div className="brand-logo" id="navTitle">SpeedScrabble</div>
       </div>
       <div className="nav-content">
         <ul className="tabs tabs-transparent">

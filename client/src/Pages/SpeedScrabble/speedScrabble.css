@@ -1,3 +1,25 @@
-#gridRow {
-  height: 4vw
+
+
+/* SMALL SCREEN STYLING */
+@media only screen 
+and (min-device-width : 300px) 
+and (max-device-width : 995px){
+  #handTile, #gridSquare{
+    width: 9.4vw !important;
+    height: 9.4vw !important;
+  }
+  #gridRow {
+    height: 9.4vw
+  }
+}
+/* NORMAL SCREEN STYLING */
+@media only screen 
+and (min-device-width : 996px){
+  #handTile #gridSquare {
+    width: 4vw !important;
+    height: 4vw !important;
+  }
+  #gridRow {
+    height: 4vw
+  }
 }

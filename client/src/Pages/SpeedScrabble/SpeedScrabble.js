@@ -201,7 +201,7 @@ const SpeedScrabble = () => {
               <div id="swapTile" className="valign-wrapper"
                 onDrop={swapOneTile}
                 onDragOver={allowDrop}
-              ><h5 className="white-text">TILE SWAP</h5>
+              ><h5 className="white-text center">TILE SWAP</h5>
               </div>
             </div>
             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>

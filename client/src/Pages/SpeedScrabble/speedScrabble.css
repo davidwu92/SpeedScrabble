@@ -18,9 +18,10 @@ and (max-device-width : 995px){
   }
   #swapTile {
     background-color: green;
-    width: 17vw !important;
-    height: 17vw !important;
+    width: 17.5vw !important;
+    height: 17.5vw !important;
     position: relative;
+    padding:1vw;
     left: 30%;
   }
 }
@@ -40,6 +41,7 @@ and (min-device-width : 996px){
     width: 8vw !important;
     height: 8vw !important;
     position: relative;
+    padding:1vw;
     left: 25%;
   }
 }

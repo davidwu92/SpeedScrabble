@@ -124,8 +124,9 @@ const SpeedScrabble = () => {
         newGrid[startPosition[1]][startPosition[0]] = bagLetters[newLetterIndex]+handNum
         setGrid(JSON.parse(JSON.stringify(newGrid)))
       }
-      toast(<>{tileData[0]==bagLetters[newLetterIndex]? <>No time penalty applied.<br/>You swapped a "{tileData[0]}" for another "{bagLetters[newLetterIndex]}". <br/>{swapCount} letter swaps left.</>
-        :<>3 second penalty applied.<br/>You swapped a "{tileData[0]}" for a "{bagLetters[newLetterIndex]}."<br/>{swapCount} letter swaps left.</>}</>,
+      toast(<>{tileData[0]==bagLetters[newLetterIndex]? 
+        <>You swapped your "{tileData[0]}" for another "{bagLetters[newLetterIndex]}".<br/>No time penalty applied.</>
+        :<>You swapped your "{tileData[0]}" for {"AEFHILMNORSX".includes(bagLetters[newLetterIndex])? <>an "{bagLetters[newLetterIndex]}".</>:<>a "{bagLetters[newLetterIndex]}".</>}<br/>3 second penalty applied.</>}</>,
       {autoClose: 9000,hideProgressBar: true,type: "success"})
     }
   }
@@ -133,9 +134,9 @@ const SpeedScrabble = () => {
 
 //MY HAND
   //Letters in my hand.
-  const [handLetters, setHandLetters] = useState(["_", "Y", "O", "U", "R", "_", "_", "H", "A", "N", "D","_"])
+  const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "S", "T", "A", "R", "T","!"])
   //Used Letters from my hand.
-  const [handUsed, setHandUsed] = useState([false,false,false,false,false,false,false,false,false,false,false,false,])
+  const [handUsed, setHandUsed] = useState([true,true,true,true,true,true,true,true,true,true,true,true,])
 
   //currently not using this.
   const shuffleHand = () =>{
@@ -193,19 +194,19 @@ const SpeedScrabble = () => {
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
           
-          {/* MY HAND */}
+          {/* MY HAND + TILESWAP */}
           <div className="col s12 m5 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
             <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
               {/* <button className="btn btn-small" onClick={shuffleHand}>Shuffle</button> */}
-              <h6>Swaps left: {swapCount}</h6>
+              <h5>Swaps left: {swapCount}</h5>
               <div id="swapTile" className="valign-wrapper"
                 onDrop={swapOneTile}
                 onDragOver={allowDrop}
-              ><h5 className="white-text center">TILE SWAP</h5>
+              ><h5 className="white-text center">{swapCount ? "TILE SWAP" : "OUT OF SWAPS"}</h5>
               </div>
             </div>
             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
-              <h6>Your Hand</h6>
+              <h5>Your Hand</h5>
               {handLetters.map((tile, index)=>
                 <div 
                   draggable={!handUsed[index]}
@@ -217,7 +218,7 @@ const SpeedScrabble = () => {
                   style={!handUsed[index] ? {backgroundColor: "red", margin:"2px", padding:"1vw",
                           width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset"}
                         :{backgroundColor: "grey", margin:"2px",padding:"1vw",
-                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"outset"}}>
+                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset"}}>
                   <h5 className="white-text">{tile}</h5>
                 </div>)}
             </div>

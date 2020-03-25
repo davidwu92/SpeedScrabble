@@ -1,3 +1,4 @@
+/* TILES AND LETTERS ARE h5 */
 h5 {
   margin:0px
 }
@@ -17,11 +18,17 @@ and (max-device-width : 995px){
     height: 8.5vw
   }
   #swapTile {
-    background-color: green;
-    width: 17vw !important;
-    height: 17vw !important;
+    background-color: limegreen;
+    border-style:inset;
+    width: 18vw !important;
+    height: 18vw !important;
     position: relative;
+    padding:1vw;
     left: 30%;
+  }
+  h5{
+    font-size: medium;
+    margin: 2px;
   }
 }
 
@@ -36,10 +43,12 @@ and (min-device-width : 996px){
     height: 4vw
   }
   #swapTile {
-    background-color: green;
+    background-color: limegreen;
+    border-style:inset;
     width: 8vw !important;
     height: 8vw !important;
     position: relative;
+    padding:1vw;
     left: 25%;
   }
 }

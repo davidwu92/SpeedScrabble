@@ -1,12 +1,27 @@
 import React, {useState, useEffect} from 'react'
-import moment from 'moment'
+// import moment from 'moment'
 import './speedScrabble.css'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UserAPI from '../../utils/UserAPI'
 
+const { getUser } = UserAPI
 
 const SpeedScrabble = () => {
   toast.configure()
+  //on pageload, get user info for My past scores.
+  const [username, setUsername]=useState("scrabbler")
+  const [myScores, setMyScores]=useState([])
+  let token = JSON.parse(JSON.stringify(localStorage.getItem("token")))
+  useEffect(()=>{
+    getUser(token)
+      .then(({data})=>{
+        setUsername(data.username)
+        setMyScores(data.scores)
+      })
+      .catch(e=>console.error(e))
+  },[])
+
 
   //GAME TIMER
   const [seconds, setSeconds] = useState(0)
@@ -106,9 +121,7 @@ const SpeedScrabble = () => {
       let handNum = tileData[2] ? parseInt(""+tileData[1]+tileData[2]):parseInt(tileData[1])
       let bagLetters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
       //take out my hand's letters from the bag.
-      handLetters.forEach((letter, index)=>{
-        bagLetters = bagLetters.replace(letter, "")
-      })
+      handLetters.forEach(letter=> bagLetters = bagLetters.replace(letter, ""))
       //pick a letter from the remaining letters to replace the swapped tile.
       let newLetterIndex = Math.floor(Math.random()*(98-handLetters.length))
       let newHand = handLetters
@@ -124,18 +137,21 @@ const SpeedScrabble = () => {
         newGrid[startPosition[1]][startPosition[0]] = bagLetters[newLetterIndex]+handNum
         setGrid(JSON.parse(JSON.stringify(newGrid)))
       }
-      toast(<>{tileData[0]==bagLetters[newLetterIndex]? <>No time penalty applied.<br/>You swapped a "{tileData[0]}" for another "{bagLetters[newLetterIndex]}". <br/>{swapCount} letter swaps left.</>
-        :<>3 second penalty applied.<br/>You swapped a "{tileData[0]}" for a "{bagLetters[newLetterIndex]}."<br/>{swapCount} letter swaps left.</>}</>,
-      {autoClose: 9000,hideProgressBar: true,type: "success"})
+      toast(<>{tileData[0]==bagLetters[newLetterIndex]? 
+        <>You swapped your "{tileData[0]}" for another "{bagLetters[newLetterIndex]}".<br/>No time penalty applied.</>
+        :<>You swapped your "{tileData[0]}" for {"AEFHILMNORSX".includes(bagLetters[newLetterIndex])? <>an "{bagLetters[newLetterIndex]}".</>:<>a "{bagLetters[newLetterIndex]}".</>}<br/>3 second penalty applied.</>}</>,
+      {autoClose: 5000,hideProgressBar: true,type: "success"})
     }
   }
 
 
 //MY HAND
   //Letters in my hand.
-  const [handLetters, setHandLetters] = useState(["_", "Y", "O", "U", "R", "_", "_", "H", "A", "N", "D","_"])
+  const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "S", "T", "A", "R", "T","!"])
   //Used Letters from my hand.
-  const [handUsed, setHandUsed] = useState([false,false,false,false,false,false,false,false,false,false,false,false,])
+  const [handUsed, setHandUsed] = useState([true,true,true,true,true,true,true,true,true,true,true,true,])
+  //Starting Hand tracked for final score?
+  const [startingHand, setStartingHand] = useState("")
 
   //currently not using this.
   const shuffleHand = () =>{
@@ -147,6 +163,7 @@ const SpeedScrabble = () => {
 //NEW GAME BUTTON
   const newGame = () =>{
     //Start Timer from zero, reset grid, deal tiles for hand.
+    setSwapCount(3)
     setSeconds(0)
     setIsRunning(true)
     setGrid([ ["Null","Null","Null","Null","Null","Null","Null","Null","Null","Null"],
@@ -171,6 +188,7 @@ const SpeedScrabble = () => {
       newHand.push(scrabbleLetters[letterNumber])
     }
     setHandLetters(newHand)
+    setStartingHand(newHand.join(''))
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
 
@@ -184,28 +202,28 @@ const SpeedScrabble = () => {
   return(
     <>
       <div className="container">
-        <h1 className="center">Speed Scrabble</h1>
-        <button className="btn black" onClick={newGame}>START</button>
+        <h3 className="center">Speed Scrabble</h3>
+        <button className="btn pink" onClick={newGame}>START GAME</button>
+        <h5 className="right">Game Time: {seconds}</h5>
       </div>
         <button onClick={testButton}>TEST</button>
         <button onClick={seeData}>SEE GRID</button>
-
+        <br></br>
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
           
-          {/* MY HAND */}
+          {/* MY HAND + TILESWAP */}
           <div className="col s12 m5 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
             <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
-              {/* <button className="btn btn-small" onClick={shuffleHand}>Shuffle</button> */}
-              <h6>Swaps left: {swapCount}</h6>
+              <h5>{swapCount} swaps left.</h5>
               <div id="swapTile" className="valign-wrapper"
                 onDrop={swapOneTile}
                 onDragOver={allowDrop}
-              ><h5 className="white-text">TILE SWAP</h5>
+              ><h5 className="white-text center">{swapCount ? "TILE SWAP" : "OUT OF SWAPS"}</h5>
               </div>
             </div>
             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
-              <h6>Your Hand</h6>
+              <h5>{username}'s hand</h5>
               {handLetters.map((tile, index)=>
                 <div 
                   draggable={!handUsed[index]}
@@ -217,7 +235,7 @@ const SpeedScrabble = () => {
                   style={!handUsed[index] ? {backgroundColor: "red", margin:"2px", padding:"1vw",
                           width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset"}
                         :{backgroundColor: "grey", margin:"2px",padding:"1vw",
-                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"outset"}}>
+                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset"}}>
                   <h5 className="white-text">{tile}</h5>
                 </div>)}
             </div>
@@ -248,15 +266,17 @@ const SpeedScrabble = () => {
               </div>
             ))}
           </div>
-
-          {/* TIMER */}
-          <div className="col s12 m1 l1">
-            <h6 className="center">Game Time</h6>
-            <h6 className="center">{seconds}</h6>
-            {/* <button className="btn" onClick={()=>setIsRunning(true)}>Start Clock</button> */}
-            {/* <button className="btn" onClick={()=>setIsRunning(false)}>Pause Clock</button> */}
+          
+          <div className="col s12 m1 l1 center">
+            <h5>{username}</h5>
+            <h6>Score History</h6>
+            {myScores.length ? myScores.map(score=>(
+              <>
+                <ul>{score}</ul>
+              </>
+              ))
+              :null}
           </div>
-
         </div> {/* END GAME CONTAINER */}
         
         <div className="row">

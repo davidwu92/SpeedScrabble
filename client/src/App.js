@@ -10,49 +10,65 @@ import Home from './Pages/Home'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
 import SpeedScrabble from './Pages/SpeedScrabble'
+import Multiplayer from './Pages/Multiplayer'
 import Help from './Pages/Help'
+import TestPage from './Pages/TestPage'
 
 import './App.css'
 
 function App() {
   return (
     <Router>
-    <Switch>
-      <Route exact path="/">
-        <Navbar/>
-        <Home />
-      </Route>
-    </Switch>
-    
-    <Switch>
-      <Route exact path="/login">
-        <Navbar/>
-        <Login />
-      </Route>
-    </Switch>
-    
-    <Switch>
-      <Route exact path="/register">
-        <Navbar/>
-        <Register />
-      </Route>
-    </Switch>
+      <Switch>
+        <Route exact path="/">
+          <Navbar/>
+          <Home />
+        </Route>
+      </Switch>
+      
+      <Switch>
+        <Route exact path="/login">
+          <Navbar/>
+          <Login />
+        </Route>
+      </Switch>
+      
+      <Switch>
+        <Route exact path="/register">
+          <Navbar/>
+          <Register />
+        </Route>
+      </Switch>
 
-    <Switch>
-      <Route exact path="/speedscrabble">
-        <LoggedInNav/>
-        <SpeedScrabble/>
-      </Route>
-    </Switch>
+      <Switch>
+        <Route exact path="/speedscrabble">
+          <LoggedInNav/>
+          <SpeedScrabble/>
+        </Route>
+      </Switch>
 
-    <Switch>
-      <Route exact path="/help">
-        <LoggedInNav/>
-        <Help/>
-      </Route>
-    </Switch>
+      <Switch>
+        <Route exact path="/multiplayer">
+          <LoggedInNav/>
+          <Multiplayer/>
+        </Route>
+      </Switch>
 
-  </Router>
+      <Switch>
+        <Route exact path="/help">
+          <LoggedInNav/>
+          <Help/>
+        </Route>
+      </Switch>
+      
+      <Switch>
+        <Route exact path="/test">
+          <LoggedInNav/>
+          <TestPage/>
+        </Route>
+      </Switch>
+
+    </Router>
   );
 }
 

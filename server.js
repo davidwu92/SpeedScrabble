@@ -5,6 +5,7 @@ const app = express()
 // passport modules
 const passport = require('passport')
 const { Strategy } = require('passport-local')
+
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const {User} = require('./models')
 const { Strategy: JWTStrategy, ExtractJwt } = require('passport-jwt')
@@ -19,7 +20,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 //MONGODB
-const mongoURI = process.env.NODE_ENV === 'production' ? process.env.MONGODB_URI : 'mongodb://localhost/paymentTrackerdb'
+const mongoURI = process.env.NODE_ENV === 'production' ? process.env.MONGODB_URI : 'mongodb://localhost/speedscrabbledb'
 const mongoose = require('mongoose')
 const conn = mongoose.createConnection(mongoURI, {
   // these methods are rarely used

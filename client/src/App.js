@@ -12,7 +12,7 @@ import Register from './Pages/Register'
 import SpeedScrabble from './Pages/SpeedScrabble'
 import Help from './Pages/Help'
 
-import './app.css'
+import './App.css'
 
 function App() {
   return (

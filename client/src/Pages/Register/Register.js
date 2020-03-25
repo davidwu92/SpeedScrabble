@@ -84,6 +84,10 @@ const RegisterForm = () => {
           <input className="white-text" placeholder="Password" type="password" id="password" name="password" value={registerState.password} onChange={registerState.handleInputChange} />
           <label htmlFor="password"></label>
         </div>
+        {/* LOGIN WITH FACEBOOK */}
+        <div>
+          <a href="/auth/facebook">Login with Facebook</a>
+        </div>
         {/* SUBMIT REGISTRATION BUTTON */}
         <button onClick={handleAddUser} id="register" className="btn black waves-effect waves-light col s12 hoverable" type="submit" name="action">Register
               <i className="material-icons right">send</i>

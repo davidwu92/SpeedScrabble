@@ -9,6 +9,10 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const {User} = require('./models')
 const { Strategy: JWTStrategy, ExtractJwt } = require('passport-jwt')
 
+// facebook modules
+const passportFacebook = require('passport-facebook')
+const FacebookStrategy = passportFacebook.Strategy
+
 //DEPLOYING TO HEROKU
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"))
@@ -46,6 +50,21 @@ passport.use(new JWTStrategy({
       .catch(e => cb(e))
     )
 )
+
+// Facebook with Passport
+
+passport.use(new FacebookStrategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
+  callbackURL: "http://localhost/3000/auth/facebook/callback"
+},
+
+function(accessToken, refreshToken, profile, cb) {
+  User.findOne({ facebookId: profile.id }, function (err, user) {
+    return cb(err, user)
+    })
+  }
+))
 
 // GoogleStrategy with Passport
 passport.use(new GoogleStrategy({

@@ -132,13 +132,47 @@ const SpeedScrabble = () => {
     setHandLetters(newHand)
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
+
+  // to see if all tiles are being used
   const testButton = () => {
-    console.log(handUsed)
+    let check = (usedHand) => {
+     if (usedHand === true) {
+       return true
+     }
+    }
+    console.log(handUsed.every(check))
   }
+
   const seeData = (e)=>{
     console.log("dataset.tile: " +e.target.dataset.tile)
     console.log("dataset.coordinates: "+e.target.dataset.coordinates)
   }
+
+  // Read words on board functions
+  const readWords = () => {
+    // check if all tiles are used in hand
+     let check = (usedHand) => {
+     if (usedHand === true) {
+       return true
+      }
+     }
+
+    if (handUsed.every(check) === true) {
+    grid.forEach((arr) => {
+      arr.forEach(letter => {
+        if (letter !== "Null") {
+          let wordsArr = []
+          let newLetter = letter.charAt(0)
+          wordsArr.push(newLetter)
+          console.log(wordsArr)
+        } 
+      })
+    })
+    } else {
+      console.log('need to use all tiles!')
+    }
+  }
+
   return(
     <>
       <div className="container">
@@ -207,6 +241,7 @@ const SpeedScrabble = () => {
             <h3>{seconds}</h3>
             <button className="btn" onClick={()=>setIsRunning(true)}>Start Clock</button>
             <button className="btn" onClick={()=>setIsRunning(false)}>Pause Clock</button>
+            <button onClick={() =>readWords()}>Read Board</button>
           </div>
 
         </div> {/* END GAME CONTAINER */}

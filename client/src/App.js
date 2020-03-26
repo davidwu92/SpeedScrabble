@@ -10,7 +10,7 @@ import Home from './Pages/Home'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
 import SpeedScrabble from './Pages/SpeedScrabble'
-import Multiplayer from './Pages/Multiplayer'
+import Leaderboards from './Pages/Leaderboards'
 import Help from './Pages/Help'
 import TestPage from './Pages/TestPage'
 
@@ -48,9 +48,9 @@ function App() {
       </Switch>
 
       <Switch>
-        <Route exact path="/multiplayer">
+        <Route exact path="/leaderboards">
           <LoggedInNav/>
-          <Multiplayer/>
+          <Leaderboards/>
         </Route>
       </Switch>
 

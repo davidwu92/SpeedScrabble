@@ -1,0 +1,15 @@
+module.exports = (model, Schema) => {
+  const Score = new Schema({
+      score: { type: Number, required:true },
+      startingHand: {type: String },
+      createdAt: { type: Date, default: Date.now },
+      userLink: {
+        type: Schema.Types.ObjectId, ref: 'User'
+      }
+      //IN CASE WE WANT PASSWORD RESET OPTION
+      // resetPasswordToken: String,
+      // resetPasswordExpires: Date,
+      // password: { type: String, require: true},
+  })
+  return model('Score', Score)
+}

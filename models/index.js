@@ -2,5 +2,6 @@
 const { model, Schema } = require('mongoose')
 
 const User = require('./User.js')(model, Schema)
+const Score = require('./Score.js')(model, Schema)
 
-module.exports = { User }
+module.exports = { User, Score }

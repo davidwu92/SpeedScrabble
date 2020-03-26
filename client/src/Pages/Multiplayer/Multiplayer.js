@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 const MultiPlayer = () => {
   const [multiState, setMultiState] = useState({
-    result: 
+
   })
 
 const testFunc = () => {
@@ -18,7 +18,6 @@ const testFunc = () => {
     <div>
       <h1>Multiplayer Page</h1>
       <button onClick={testFunc}>TEST</button>
-      <p>{result}</p>
     </div>
   )
 }

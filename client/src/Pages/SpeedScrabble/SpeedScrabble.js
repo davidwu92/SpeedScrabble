@@ -231,6 +231,16 @@ const SpeedScrabble = () => {
     }
   }
 
+
+  const checkWords = () => {
+    fetch('/words.txt')
+      .then(r => r.text())
+      .then(text => {
+        console.log(text)
+      })
+      
+  }
+
   return(
     <>
       <div className="container">
@@ -238,7 +248,7 @@ const SpeedScrabble = () => {
         <button className="btn pink" onClick={newGame}>START GAME</button>
         <h5 className="right">Game Time: {seconds}</h5>
       </div>
-        <button onClick={testButton}>TEST</button>
+        <button onClick={checkWords}>TEST</button>
         <button onClick={seeData}>SEE GRID</button>
         <br></br>
         {/* GAME */}

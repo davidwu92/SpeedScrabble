@@ -105,7 +105,7 @@ const SpeedScrabble = () => {
     }
     else {
       toast(`You can't drop tiles from your hand onto occupied spaces.`,
-      {autoClose: 9000,hideProgressBar: true,type: "error"})
+      {autoClose: 5000,hideProgressBar: true,type: "error"})
     }
   }
   
@@ -192,13 +192,143 @@ const SpeedScrabble = () => {
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
 
-  const testButton = () => {
-    let check = (usedHand) => {
-     if (usedHand === true) {
-       return true
-     }
+//SUBMIT BUTTON: readWords
+  const readWords = () =>{
+    if(!isRunning){
+      toast("You can't be done before you hit 'Start'.", {autoClose: 5000,hideProgressBar: true,type: "error"})
+      return(false)
     }
-    console.log(handUsed.every(check))
+    if (handUsed.includes(false)){
+      toast("You need to use your entire hand.",{autoClose: 5000,hideProgressBar: true,type: "error"})
+      return(false)
+    }
+    
+    //Calculate perimeter to check legality of formation? --NOT PERFECT
+    // let perimeter = 0
+
+    //GET ALL HORIZONTAL WORDS
+    let xWordsFound = [] //xWordsFound = [["rowNum+colNum+letter+handNum", ],[],[]]
+    grid.forEach((row, rowNum)=>{
+      let nullIndex = -1
+      let tilesInRow = []
+      row.forEach((tile, colNum)=>{
+        if (tile=="Null"){
+          nullIndex = colNum
+        } else{ //TILE FOUND.
+          if(colNum == nullIndex+1){ //check if NO TILE on its left, add Space.
+            tilesInRow.push("space")
+            tilesInRow.push(rowNum + ""+colNum + tile)
+              // perimeter++ //add one to perimeter from empty space on left.
+              // //perimeter++ if nothing on right.
+              // if(colNum<9){
+              //   if(grid[rowNum][colNum+1]=="Null"){perimeter++}
+              // } else{perimeter++}
+          }
+          else{ //if LETTER on left, don't add space.
+            tilesInRow.push(rowNum + ""+colNum + tile)
+              // //perimeter++ if nothing on its right.
+              // if(colNum<9){
+              //   if(grid[rowNum][colNum+1]=="Null"){perimeter++}
+              // } else{perimeter++}
+          }
+        }
+      })
+      while (tilesInRow.indexOf("space")!=-1){ //while tilesInRow contains "space"...
+        let piece = tilesInRow.slice(0,tilesInRow.indexOf("space"))
+        if(piece.length>1) {xWordsFound.push(piece)}
+        let rest = tilesInRow.slice(tilesInRow.indexOf("space")+1)
+        tilesInRow = rest
+      }
+      if (tilesInRow.length>1){xWordsFound.push(tilesInRow)}
+    })
+
+    //GETTING VERTICAL WORDS
+    let yWordsFound = []
+    for (let colNum=0; colNum<10; colNum++){
+      let tilesInColumn = []
+      let nullIndex = -1
+      grid.forEach((row, rowNum) => {
+        if (row[colNum]=="Null"){ //NO TILE
+          nullIndex = rowNum
+        } else { 
+          if(rowNum == nullIndex+1){ //Tile is under a Null Space
+            tilesInColumn.push("space")
+            tilesInColumn.push(rowNum + "" + colNum + row[colNum])
+              // perimeter++ //empty space above
+              // //check if empty space under...
+              // if(rowNum<9){
+              //   if(grid[rowNum+1][colNum]=="Null"){perimeter++}
+              // } else{perimeter++}
+          }
+          else{ //Tile is under another tile
+            tilesInColumn.push(rowNum + "" + colNum + row[colNum])
+              // //check if empty space under...
+              // if(rowNum<9){
+              //   if(grid[rowNum+1][colNum]=="Null"){perimeter++}
+              // } else{perimeter++}
+          }
+        }
+      })
+      while (tilesInColumn.indexOf("space")!=-1){ //while tilesInColumn contains "space"...
+        let piece = tilesInColumn.slice(0,tilesInColumn.indexOf("space"))
+        if(piece.length>1) {yWordsFound.push(piece)}
+        let rest = tilesInColumn.slice(tilesInColumn.indexOf("space")+1)
+        tilesInColumn = rest
+      }
+      if (tilesInColumn.length>1){yWordsFound.push(tilesInColumn)}
+    }
+
+    //CHECK FOR CROSSWORD LEGALITY: NEED TO REWORK...check by POSITIONS?
+    //#sharedTiles MUST BE >= #words-1 (equal if no "blocks" made)
+    //let Discrepancy = #words - #sharedTiles - 1
+    //totalWordLength MUST BE handNum + #sharedTiles...
+    //perimeter MUST be 26-2*Discrepancy
+    let sharedTiles = []
+    let totalWordLength = 0
+    xWordsFound.forEach(xWord => {
+      totalWordLength += xWord.length
+      xWord.forEach(tile=>{
+        yWordsFound.forEach(yWord=>{
+          if(yWord.includes(tile)) {sharedTiles.push(tile)}
+        })
+      })
+    })
+    yWordsFound.forEach(yWord=>{
+      totalWordLength += yWord.length
+    })
+    // let discrepancy = sharedTiles.length - xWordsFound.length - yWordsFound.length + 1
+    // console.log("totalWordLength: " + totalWordLength)
+    // console.log("perimeter: " + perimeter)
+    // console.log("discrepancy: " + discrepancy)
+    if(sharedTiles.length >= xWordsFound.length+yWordsFound.length-1
+      && totalWordLength == handLetters.length + sharedTiles.length
+      // && perimeter == 26-(discrepancy*2)
+      ){console.log("LEGAL PLACEMENT")}
+      else{console.log("ILLEGAL PLACEMENT")}
+
+    // GET ALL WORDS (simple array of strings, to pass to dictionary for final check.)
+    let pureWordStrings = []
+    xWordsFound.forEach(xWord=>{
+      let extractString = ''
+      xWord.forEach(tile=>{
+        extractString += tile[2]
+      })
+      pureWordStrings.push(extractString)
+    })
+    yWordsFound.forEach(yWord=>{
+      let extractString = ''
+      yWord.forEach(tile=>{
+        extractString += tile[2]
+      })
+      pureWordStrings.push(extractString)
+    })
+    console.log(pureWordStrings) //this is the array of words submitted. All words have length >= 2.
+    return(pureWordStrings)
+  }
+
+  const readWordsTest = () => {
+    console.log("Testing readWords...")
+    readWords()
   }
 
   const seeData = (e)=>{
@@ -248,8 +378,7 @@ const SpeedScrabble = () => {
         <button className="btn pink" onClick={newGame}>START GAME</button>
         <h5 className="right">Game Time: {seconds}</h5>
       </div>
-        <button onClick={checkWords}>TEST</button>
-        <button onClick={seeData}>SEE GRID</button>
+        <button onClick={readWordsTest}>readWords Test</button>
         <br></br>
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
@@ -310,6 +439,8 @@ const SpeedScrabble = () => {
           </div>
           
           <div className="col s12 m1 l1 center">
+            <button className="btn black" onClick={readWords}>DONE</button>
+            <br></br>
             <h5>{username}</h5>
             <h6>Score History</h6>
             {myScores.length ? myScores.map(score=>(

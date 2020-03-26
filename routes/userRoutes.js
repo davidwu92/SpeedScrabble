@@ -2,6 +2,10 @@ const { User } = require('../models')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 
+const passportFacebook = require('passport-facebook')
+const FacebookStrategy = passportFacebook.Strategy
+
+
 module.exports = app => {
   // Register new user
   app.post('/users', (req, res) => {
@@ -66,4 +70,16 @@ module.exports = app => {
       res.redirect('/mycalendar')
     }
   )
+
+// TEST CODE for FACEBOOK
+
+app.get('/auth/facebook', passport.authenticate('facebook'))
+
+app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
+  return res.status(200).cookie('jwt', signToken(req.user), {
+    httpOnly: true
+  })
+  .redirect('/')
+})
+
 }

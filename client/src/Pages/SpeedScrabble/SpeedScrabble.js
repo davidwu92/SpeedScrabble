@@ -330,10 +330,47 @@ const SpeedScrabble = () => {
     console.log("Testing readWords...")
     readWords()
   }
+
   const seeData = (e)=>{
     console.log("dataset.tile: " +e.target.dataset.tile)
     console.log("dataset.coordinates: "+e.target.dataset.coordinates)
   }
+
+  // Read words on board functions
+  const readWords = () => {
+    // check if all tiles are used in hand
+     let check = (usedHand) => {
+     if (usedHand === true) {
+       return true
+      }
+     }
+
+    if (handUsed.every(check) === true) {
+    grid.forEach((arr) => {
+      arr.forEach(letter => {
+        if (letter !== "Null") {
+          let wordsArr = []
+          let newLetter = letter.charAt(0)
+          wordsArr.push(newLetter)
+          console.log(wordsArr)
+        } 
+      })
+    })
+    } else {
+      console.log('need to use all tiles!')
+    }
+  }
+
+
+  const checkWords = () => {
+    fetch('/words.txt')
+      .then(r => r.text())
+      .then(text => {
+        console.log(text)
+      })
+      
+  }
+
   return(
     <>
       <div className="container">

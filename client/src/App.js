@@ -13,6 +13,7 @@ import SpeedScrabble from './Pages/SpeedScrabble'
 import Leaderboards from './Pages/Leaderboards'
 import Help from './Pages/Help'
 import TestPage from './Pages/TestPage'
+import Multiplayer from './Pages/Multiplayer'
 
 import './App.css'
 
@@ -65,6 +66,13 @@ function App() {
         <Route exact path="/test">
           <LoggedInNav/>
           <TestPage/>
+        </Route>
+      </Switch>
+
+      <Switch>
+        <Route exact path="/multiplayer">
+          <LoggedInNav/>
+          <Multiplayer/>
         </Route>
       </Switch>
 

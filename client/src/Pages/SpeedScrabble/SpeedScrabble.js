@@ -4,8 +4,12 @@ import './speedScrabble.css'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserAPI from '../../utils/UserAPI'
+import WordAPI from '../../utils/WordAPI'
+import Axios from 'axios';
+
 
 const { getUser } = UserAPI
+const { getWord } = WordAPI
 
 const SpeedScrabble = () => {
   toast.configure()
@@ -336,39 +340,52 @@ const SpeedScrabble = () => {
     console.log("dataset.coordinates: "+e.target.dataset.coordinates)
   }
 
-  // Read words on board functions
-  const readWords = () => {
-    // check if all tiles are used in hand
-     let check = (usedHand) => {
-     if (usedHand === true) {
-       return true
-      }
-     }
+  // // Read words on board functions
+  // const readWords = () => {
+  //   // check if all tiles are used in hand
+  //    let check = (usedHand) => {
+  //    if (usedHand === true) {
+  //      return true
+  //     }
+  //    }
 
-    if (handUsed.every(check) === true) {
-    grid.forEach((arr) => {
-      arr.forEach(letter => {
-        if (letter !== "Null") {
-          let wordsArr = []
-          let newLetter = letter.charAt(0)
-          wordsArr.push(newLetter)
-          console.log(wordsArr)
-        } 
-      })
-    })
-    } else {
-      console.log('need to use all tiles!')
-    }
-  }
+  //   if (handUsed.every(check) === true) {
+  //   grid.forEach((arr) => {
+  //     arr.forEach(letter => {
+  //       if (letter !== "Null") {
+  //         let wordsArr = []
+  //         let newLetter = letter.charAt(0)
+  //         wordsArr.push(newLetter)
+  //         console.log(wordsArr)
+  //       } 
+  //     })
+  //   })
+  //   } else {
+  //     console.log('need to use all tiles!')
+  //   }
+  // }
 
 
   const checkWords = () => {
-    fetch('/words.txt')
-      .then(r => r.text())
-      .then(text => {
-        console.log(text)
+    let subWord = {
+      word: ["bar", "here", "zz"]
+    }
+    getWord(subWord)
+      .then(({ data }) => {
+        let checkedWords = []
+        let subArr = data.forEach((arr) => {
+          checkedWords.push(arr.word)
+        })
+        // array of non words
+        let notWord = subWord.word.filter(val => !checkedWords.includes(val))
+        // array of correct words
+        let yesWord = subWord.word.filter(val => checkedWords.includes(val))
+
+        console.log(notWord)
+        console.log(yesWord)
+
       })
-      
+      .catch(e => console.error(e))
   }
 
   return(
@@ -379,6 +396,7 @@ const SpeedScrabble = () => {
         <h5 className="right">Game Time: {seconds}</h5>
       </div>
         <button onClick={readWordsTest}>readWords Test</button>
+        <button onClick={checkWords}>checkWords Test</button>
         <br></br>
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>

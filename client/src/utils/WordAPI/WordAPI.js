@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const WordAPI = {
   // check word in database
-  getWord: word => axios.post('/words', word)
+  getWord: (word) => axios.post('/words', word)
 
 }
 

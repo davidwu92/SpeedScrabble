@@ -4,20 +4,34 @@ import './speedScrabble.css'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserAPI from '../../utils/UserAPI'
+import WordAPI from '../../utils/WordAPI'
+import ScoreAPI from '../../utils/ScoreAPI'
+import Axios from 'axios';
+
 
 const { getUser } = UserAPI
+const { getWord } = WordAPI
+const { addScore, getScores } = ScoreAPI
 
 const SpeedScrabble = () => {
   toast.configure()
   //on pageload, get user info for My past scores.
   const [username, setUsername]=useState("scrabbler")
-  const [myScores, setMyScores]=useState([])
+  const [myScores, setMyScores]=useState({})
   let token = JSON.parse(JSON.stringify(localStorage.getItem("token")))
+  let userId = JSON.parse(JSON.stringify(localStorage.getItem("userId")))
   useEffect(()=>{
     getUser(token)
       .then(({data})=>{
         setUsername(data.username)
-        setMyScores(data.scores)
+      })
+      .catch(e=>console.error(e))
+  },[])
+// show score history
+  useEffect(()=>{
+    getScores(userId)
+      .then(({data})=>{
+        setMyScores(data.map(e => e.score))
       })
       .catch(e=>console.error(e))
   },[])
@@ -323,6 +337,7 @@ const SpeedScrabble = () => {
       pureWordStrings.push(extractString)
     })
     console.log(pureWordStrings) //this is the array of words submitted. All words have length >= 2.
+    checkWords(pureWordStrings)
     return(pureWordStrings)
   }
 
@@ -336,40 +351,84 @@ const SpeedScrabble = () => {
     console.log("dataset.coordinates: "+e.target.dataset.coordinates)
   }
 
-  // Read words on board functions
-  const readWords = () => {
-    // check if all tiles are used in hand
-     let check = (usedHand) => {
-     if (usedHand === true) {
-       return true
-      }
-     }
 
-    if (handUsed.every(check) === true) {
-    grid.forEach((arr) => {
-      arr.forEach(letter => {
-        if (letter !== "Null") {
-          let wordsArr = []
-          let newLetter = letter.charAt(0)
-          wordsArr.push(newLetter)
-          console.log(wordsArr)
-        } 
-      })
-    })
-    } else {
-      console.log('need to use all tiles!')
+  const checkWords = (pureWordStrings) => {
+    let lowerCase = pureWordStrings.map(v => v.toLowerCase())
+    let subWord = {
+      word: lowerCase
     }
-  }
-
-
-  const checkWords = () => {
-    fetch('/words.txt')
-      .then(r => r.text())
-      .then(text => {
-        console.log(text)
+    console.log(subWord)
+    getWord(subWord)
+      .then(({ data }) => {
+        let checkedWords = []
+        let subArr = data.forEach((arr) => {
+          checkedWords.push(arr.word)
+        })
+        // array of non words
+        let notWord = subWord.word.filter(val => !checkedWords.includes(val))
+        // array of correct words
+        let yesWord = subWord.word.filter(val => checkedWords.includes(val))
+        
+        console.log(notWord)
+        console.log(yesWord)
+        scoreWords(yesWord)
       })
-      
+      .catch(e => console.error(e))
   }
+
+  let scoreWords = (yesWord) => {
+
+    let word = yesWord.join('')
+    console.log(word)
+    const scrabble = {
+      a: 1, 
+      b: 3,
+      c: 3,
+      d: 2,
+      e: 1,
+      f: 4,
+      g: 2,
+      h: 4,
+      i: 1,
+      j: 8,
+      k: 5,
+      l: 1,
+      m: 3,
+      n: 1,
+      o: 1,
+      p: 3,
+      q: 10,
+      r: 1,
+      s: 1,
+      t: 1,
+      u: 1,
+      v: 4,
+      w: 4,
+      x: 8,
+      y: 4,
+      z: 10
+    }
+    const sum = [...word].reduce((accu, letter) => {
+      return accu + scrabble[letter.toLowerCase()]
+    }, 0)
+
+    console.log(sum)
+    let scores = {
+      score: sum,
+      userLink: userId
+    }
+    addScore(scores)
+      .then(() => {
+        getScores(userId)
+          .then(({ data }) => {
+            setMyScores(data.map(e => e.score))
+          })
+          .catch(e => console.error(e))
+        })
+        .catch(e => console.error(e))
+      }
+      
+  
 
   return(
     <>
@@ -379,6 +438,8 @@ const SpeedScrabble = () => {
         <h5 className="right">Game Time: {seconds}</h5>
       </div>
         <button onClick={readWordsTest}>readWords Test</button>
+        <button onClick={checkWords}>checkWords Test</button>
+        <button onClick={scoreWords}>scoreWords Test</button>
         <br></br>
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>

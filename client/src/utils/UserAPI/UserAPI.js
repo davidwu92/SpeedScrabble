@@ -12,7 +12,7 @@ const UserAPI = {
   getUser: (token) => axios.get('/users', {
       headers: {
         "Authorization": "Bearer " + token}
-    }),
+    })
 
 }
 

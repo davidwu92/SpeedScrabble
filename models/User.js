@@ -2,7 +2,7 @@ module.exports = (model, Schema) => {
   const User = new Schema({
       username: { type: String, required:true },
       email: {type: String, required:true, unique:true},
-      scores: [{ type: Schema.Types.ObjectId, ref: 'Scores' }]
+      scores: [{ type: Schema.Types.ObjectId, ref: 'Score'}]
       //IN CASE WE WANT PASSWORD RESET OPTION
       // resetPasswordToken: String,
       // resetPasswordExpires: Date,

@@ -1,7 +1,8 @@
 module.exports = (model, Schema) => {
   const Score = new Schema({
       score: { type: Number, required:true },
-      startingHand: {type: String },
+      time: {type: Number },
+      words: {type: String},
       createdAt: { type: Date, default: Date.now },
       userLink: {
         type: Schema.Types.ObjectId, ref: 'User'

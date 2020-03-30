@@ -12,9 +12,8 @@ module.exports = app => {
 
   // POST SCORE
   app.post('/scores', (req, res) => {
-    
-    const { score, startingHand, userLink } = req.body
-    Score.create({ score, startingHand, userLink })
+    const { score, time, words, userLink } = req.body
+    Score.create({ score, time, words, userLink })
       .then(score => {
         User.updateOne({ _id: userLink}, { $push: { scores: score }})
           .then(() => res.sendStatus(200))

@@ -366,10 +366,10 @@ const SpeedScrabble = () => {
         let notWord = subWord.word.filter(val => !checkedWords.includes(val))
         // array of correct words
         let yesWord = subWord.word.filter(val => checkedWords.includes(val))
-        console.log("Array of illegal words:")
-        console.log(notWord)
-        console.log("Array of legal words:")
-        console.log(yesWord)
+        // console.log("Array of illegal words:")
+        // console.log(notWord)
+        // console.log("Array of legal words:")
+        // console.log(yesWord)
         if(notWord.length==1){ //if any words are illegal...
           setSeconds(seconds=>seconds+5)
           toast(<>You submitted an illegal word: {notWord[0]}.<br/>
@@ -396,7 +396,7 @@ const SpeedScrabble = () => {
   const scoreWords = (yesWord) => {
     setIsRunning(false)
     let word = yesWord.join('')
-    console.log(word)
+    // console.log(word)
     // const scrabble = {
     //   a: 1,    b: 3,    c: 3,    d: 2,    e: 1,    f: 4,    g: 2,    h: 4,    i: 1,
     //   j: 8,    k: 5,    l: 1,    m: 3,    n: 1,    o: 1,    p: 3,    q: 10,   r: 1,
@@ -411,12 +411,7 @@ const SpeedScrabble = () => {
     }, 0)
 
     let wordBonus = 0
-    yesWord.forEach(word=>{
-      console.log(word)
-      console.log(word.length*word.length)
-      wordBonus = wordBonus + word.length*word.length
-      console.log(wordBonus)
-    })
+    yesWord.forEach(word=>wordBonus = wordBonus + word.length*word.length)
     console.log("Your Words:")
     console.log(yesWord.join(", "))
     console.log("Letter Value Total: ")

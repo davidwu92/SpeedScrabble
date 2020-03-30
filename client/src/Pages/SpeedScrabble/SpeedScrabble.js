@@ -122,7 +122,11 @@ const SpeedScrabble = () => {
       {autoClose: 5000,hideProgressBar: true,type: "error"})
     }
   }
-  
+  //GRID: onClick check grid space info.
+  const seeData = (e)=>{
+    console.log("dataset.tile: " +e.target.dataset.tile)
+    console.log("dataset.coordinates: "+e.target.dataset.coordinates)
+  }
   const [swapCount, setSwapCount] = useState(3)
   //SWAP BOX: dropping a tile into the swap-tile area.
   const swapOneTile = e =>{
@@ -206,19 +210,20 @@ const SpeedScrabble = () => {
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
 
-//SUBMIT BUTTON: readWords
+//SUBMIT BUTTON: Check if board placement is legal, read words off, pass to checkWords.
   const readWords = () =>{
-    if(!isRunning){
-      toast("You can't be done before you hit 'Start'.", {autoClose: 5000,hideProgressBar: true,type: "error"})
-      return(false)
-    }
-    if (handUsed.includes(false)){
-      toast("You need to use your entire hand.",{autoClose: 5000,hideProgressBar: true,type: "error"})
-      return(false)
-    }
-    
-    //Calculate perimeter to check legality of formation? --NOT PERFECT
-    // let perimeter = 0
+
+    //INITIAL CHECKS: timer must be running, hand must be entirely used.
+    // if(!isRunning){
+    //   toast("You can't be done before you hit 'Start'.", {autoClose: 5000,hideProgressBar: true,type: "error"})
+    //   return(false) //stop readWords program.
+    // }
+    // if (handUsed.includes(false)){
+    //   toast("You need to use your entire hand.",{autoClose: 5000,hideProgressBar: true,type: "error"})
+    //   return(false) //stop readWords program.
+    // }
+
+    let tilePositions = [] //["rowNum+colNum", ...]
 
     //GET ALL HORIZONTAL WORDS
     let xWordsFound = [] //xWordsFound = [["rowNum+colNum+letter+handNum", ],[],[]]
@@ -232,18 +237,11 @@ const SpeedScrabble = () => {
           if(colNum == nullIndex+1){ //check if NO TILE on its left, add Space.
             tilesInRow.push("space")
             tilesInRow.push(rowNum + ""+colNum + tile)
-              // perimeter++ //add one to perimeter from empty space on left.
-              // //perimeter++ if nothing on right.
-              // if(colNum<9){
-              //   if(grid[rowNum][colNum+1]=="Null"){perimeter++}
-              // } else{perimeter++}
+              if(!tilePositions.includes(rowNum +""+colNum)){tilePositions.push(rowNum+""+colNum)}
           }
           else{ //if LETTER on left, don't add space.
             tilesInRow.push(rowNum + ""+colNum + tile)
-              // //perimeter++ if nothing on its right.
-              // if(colNum<9){
-              //   if(grid[rowNum][colNum+1]=="Null"){perimeter++}
-              // } else{perimeter++}
+              if(!tilePositions.includes(rowNum +""+colNum)){tilePositions.push(rowNum+""+colNum)}
           }
         }
       })
@@ -255,7 +253,7 @@ const SpeedScrabble = () => {
       }
       if (tilesInRow.length>1){xWordsFound.push(tilesInRow)}
     })
-
+    
     //GETTING VERTICAL WORDS
     let yWordsFound = []
     for (let colNum=0; colNum<10; colNum++){
@@ -268,18 +266,11 @@ const SpeedScrabble = () => {
           if(rowNum == nullIndex+1){ //Tile is under a Null Space
             tilesInColumn.push("space")
             tilesInColumn.push(rowNum + "" + colNum + row[colNum])
-              // perimeter++ //empty space above
-              // //check if empty space under...
-              // if(rowNum<9){
-              //   if(grid[rowNum+1][colNum]=="Null"){perimeter++}
-              // } else{perimeter++}
+              if(!tilePositions.includes(rowNum +""+colNum)){tilePositions.push(rowNum+""+colNum)}
           }
           else{ //Tile is under another tile
             tilesInColumn.push(rowNum + "" + colNum + row[colNum])
-              // //check if empty space under...
-              // if(rowNum<9){
-              //   if(grid[rowNum+1][colNum]=="Null"){perimeter++}
-              // } else{perimeter++}
+              if(!tilePositions.includes(rowNum +""+colNum)){tilePositions.push(rowNum+""+colNum)}
           }
         }
       })
@@ -292,33 +283,44 @@ const SpeedScrabble = () => {
       if (tilesInColumn.length>1){yWordsFound.push(tilesInColumn)}
     }
 
-    //CHECK FOR CROSSWORD LEGALITY: NEED TO REWORK...check by POSITIONS?
-    //#sharedTiles MUST BE >= #words-1 (equal if no "blocks" made)
-    //let Discrepancy = #words - #sharedTiles - 1
-    //totalWordLength MUST BE handNum + #sharedTiles...
-    //perimeter MUST be 26-2*Discrepancy
-    let sharedTiles = []
-    let totalWordLength = 0
-    xWordsFound.forEach(xWord => {
-      totalWordLength += xWord.length
-      xWord.forEach(tile=>{
-        yWordsFound.forEach(yWord=>{
-          if(yWord.includes(tile)) {sharedTiles.push(tile)}
-        })
+    //CHECKING LEGALITY OF TILE PLACEMENT
+    let legalTiles = [tilePositions[0]] //stores legally-placed tiles' positions.
+    let neighborPositions = [] //stores all legal positions to put tiles in.
+    const getNeighbors = (position) => { //pushes all neighboring positions into neighborPositions array.
+      let rowNum = parseInt(position[0])
+      let colNum = parseInt(position[1])
+      if(rowNum != 0) {neighborPositions.push((rowNum-1) +""+colNum)}
+      if(rowNum != 9){neighborPositions.push((rowNum+1) +""+colNum)}
+      if(colNum !=0){neighborPositions.push(rowNum + "" + (colNum -1))}
+      if(colNum !=9){neighborPositions.push(rowNum + "" + (colNum +1))}
+    }
+    getNeighbors(tilePositions[0]) //get neighbor positions of FIRST tile.
+    let uncheckedPositions = tilePositions.slice(1) //uncheckedPositions has all tiles not-yet checked.
+
+    const findLegalTiles = () =>{ //finds LEGAL TILES in uncheckedPositions.
+      let remainingPositions = []
+      uncheckedPositions.forEach(position=>{
+        if (neighborPositions.includes(position)){ //if the position is in neighborPosition...
+          if(!legalTiles.includes(position)){legalTiles.push(position)} // push to legalTiles.
+          getNeighbors(position)
+        } else { //position NOT present in neighborPosition.
+          remainingPositions.push(position)
+        }
       })
-    })
-    yWordsFound.forEach(yWord=>{
-      totalWordLength += yWord.length
-    })
-    // let discrepancy = sharedTiles.length - xWordsFound.length - yWordsFound.length + 1
-    // console.log("totalWordLength: " + totalWordLength)
-    // console.log("perimeter: " + perimeter)
-    // console.log("discrepancy: " + discrepancy)
-    if(sharedTiles.length >= xWordsFound.length+yWordsFound.length-1
-      && totalWordLength == handLetters.length + sharedTiles.length
-      // && perimeter == 26-(discrepancy*2)
-      ){console.log("LEGAL PLACEMENT")}
-      else{console.log("ILLEGAL PLACEMENT")}
+      uncheckedPositions = remainingPositions
+    }
+    let whileLimit = 0
+    while (uncheckedPositions.length && whileLimit<20){
+      findLegalTiles()
+      whileLimit++
+    }
+    if(uncheckedPositions.length){ //positions here still not found to be legally placed...
+      toast(`All the words on your board must be connected in a single crossword formation.`, 
+      {autoClose: 5000,hideProgressBar: true,type: "error"})
+      return(false) //stop readWords program.
+    } else {
+      console.log("LEGAL TILE PLACEMENT.") //Tiles placed legally; good to check word legality.
+    }
 
     // GET ALL WORDS (simple array of strings, to pass to dictionary for final check.)
     let pureWordStrings = []
@@ -336,19 +338,15 @@ const SpeedScrabble = () => {
       })
       pureWordStrings.push(extractString)
     })
+    console.log("pureWordStrings:")
     console.log(pureWordStrings) //this is the array of words submitted. All words have length >= 2.
     checkWords(pureWordStrings)
     return(pureWordStrings)
-  }
+  } //end of readWords()
 
   const readWordsTest = () => {
     console.log("Testing readWords...")
     readWords()
-  }
-
-  const seeData = (e)=>{
-    console.log("dataset.tile: " +e.target.dataset.tile)
-    console.log("dataset.coordinates: "+e.target.dataset.coordinates)
   }
 
 
@@ -357,7 +355,7 @@ const SpeedScrabble = () => {
     let subWord = {
       word: lowerCase
     }
-    console.log(subWord)
+    // console.log(subWord)
     getWord(subWord)
       .then(({ data }) => {
         let checkedWords = []
@@ -368,53 +366,74 @@ const SpeedScrabble = () => {
         let notWord = subWord.word.filter(val => !checkedWords.includes(val))
         // array of correct words
         let yesWord = subWord.word.filter(val => checkedWords.includes(val))
-        
+        console.log("Array of illegal words:")
         console.log(notWord)
+        console.log("Array of legal words:")
         console.log(yesWord)
-        scoreWords(yesWord)
+        if(notWord.length==1){ //if any words are illegal...
+          setSeconds(seconds=>seconds+5)
+          toast(<>You submitted an illegal word: {notWord[0]}.<br/>
+                  5 second penalty added.</>, 
+          {autoClose: 5000,hideProgressBar: true,type: "error"})
+        } else if (notWord.length ==2){
+          setSeconds(seconds=>5*notWord.length+seconds)
+          toast(<>You submitted {notWord.length} illegal words: {notWord.join(" and ")}.<br/>
+                  {5*notWord.length} second penalty added.</>, 
+          {autoClose: 5000,hideProgressBar: true,type: "error"})
+        } else if (notWord.length > 2){
+          setSeconds(seconds=>5*notWord.length+seconds)
+          toast(<>You submitted {notWord.length} illegal words: {notWord.slice(0, notWord.length-1).join(", ")} and {notWord[notWord.length-1]}.<br/>
+                  {5*notWord.length} second penalty added.</>, 
+          {autoClose: 5000,hideProgressBar: true,type: "error"})
+        } else { //ALL WORDS ARE LEGAL.
+          scoreWords(yesWord)
+        }
       })
       .catch(e => console.error(e))
   }
-
-  let scoreWords = (yesWord) => {
-
+  
+  //FINAL STEP IN GAME SUBMISSION: SCORE WORDS. All are legal.
+  const scoreWords = (yesWord) => {
+    setIsRunning(false)
     let word = yesWord.join('')
     console.log(word)
-    const scrabble = {
-      a: 1, 
-      b: 3,
-      c: 3,
-      d: 2,
-      e: 1,
-      f: 4,
-      g: 2,
-      h: 4,
-      i: 1,
-      j: 8,
-      k: 5,
-      l: 1,
-      m: 3,
-      n: 1,
-      o: 1,
-      p: 3,
-      q: 10,
-      r: 1,
-      s: 1,
-      t: 1,
-      u: 1,
-      v: 4,
-      w: 4,
-      x: 8,
-      y: 4,
-      z: 10
-    }
-    const sum = [...word].reduce((accu, letter) => {
-      return accu + scrabble[letter.toLowerCase()]
+    // const scrabble = {
+    //   a: 1,    b: 3,    c: 3,    d: 2,    e: 1,    f: 4,    g: 2,    h: 4,    i: 1,
+    //   j: 8,    k: 5,    l: 1,    m: 3,    n: 1,    o: 1,    p: 3,    q: 10,   r: 1,
+    //   s: 1,    t: 1,    u: 1,    v: 4,    w: 4,    x: 8,    y: 4,    z: 10    }
+    const newLetterValues = { //no points worth more than 8.
+      a: 5,    b: 6,    c: 6,    d: 5,    e: 5,    f: 6,    g: 5,    h: 6,    i: 5,
+      j: 8,    k: 7,    l: 5,    m: 6,    n: 5,    o: 5,    p: 6,    q: 8,   r: 5,
+      s: 5,    t: 5,    u: 5,    v: 6,    w: 6,    x: 8,    y: 6,    z: 8    }
+
+    let letterSum = [...word].reduce((accu, letter) => {
+      return accu + newLetterValues[letter.toLowerCase()]
     }, 0)
 
-    console.log(sum)
+    let wordBonus = 0
+    yesWord.forEach(word=>{
+      console.log(word)
+      console.log(word.length*word.length)
+      wordBonus = wordBonus + word.length*word.length
+      console.log(wordBonus)
+    })
+    console.log("Your Words:")
+    console.log(yesWord.join(", "))
+    console.log("Letter Value Total: ")
+    console.log(letterSum)
+    console.log("Word Length Bonus: ")
+    console.log(wordBonus)
+    console.log("Raw Score: ")
+    console.log(letterSum + wordBonus)
+    console.log("Minutes:")
+    console.log(seconds/60)
+    let score = Math.floor(10*((letterSum + wordBonus)/(seconds/60)))/10
+    console.log("Final Score: ")
+    console.log(score)
     let scores = {
-      score: sum,
+      score: score,
+      time: seconds,
+      words: yesWord.join(", "),
       userLink: userId
     }
     addScore(scores)
@@ -501,20 +520,17 @@ const SpeedScrabble = () => {
           
           <div className="col s12 m1 l1 center">
             <button className="btn black" onClick={readWords}>DONE</button>
-            <br></br>
-            <h5>{username}</h5>
-            <h6>Score History</h6>
+          </div>
+        </div> {/* END GAME CONTAINER */}
+        
+        <div className="row center">
+            <h5>{username}'s Score History</h5>
             {myScores.length ? myScores.map(score=>(
               <>
                 <ul>{score}</ul>
               </>
               ))
               :null}
-          </div>
-        </div> {/* END GAME CONTAINER */}
-        
-        <div className="row">
-          EMPTY PADDING/FOOTER?
         </div>
 
     </>

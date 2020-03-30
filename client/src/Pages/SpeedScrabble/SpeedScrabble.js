@@ -214,14 +214,14 @@ const SpeedScrabble = () => {
   const readWords = () =>{
 
     //INITIAL CHECKS: timer must be running, hand must be entirely used.
-    // if(!isRunning){
-    //   toast("You can't be done before you hit 'Start'.", {autoClose: 5000,hideProgressBar: true,type: "error"})
-    //   return(false) //stop readWords program.
-    // }
-    // if (handUsed.includes(false)){
-    //   toast("You need to use your entire hand.",{autoClose: 5000,hideProgressBar: true,type: "error"})
-    //   return(false) //stop readWords program.
-    // }
+    if(!isRunning){
+      toast("You can't be done before you hit 'Start'.", {autoClose: 5000,hideProgressBar: true,type: "error"})
+      return(false) //stop readWords program.
+    }
+    if (handUsed.includes(false)){
+      toast("You need to use your entire hand.",{autoClose: 5000,hideProgressBar: true,type: "error"})
+      return(false) //stop readWords program.
+    }
 
     let tilePositions = [] //["rowNum+colNum", ...]
 
@@ -344,12 +344,6 @@ const SpeedScrabble = () => {
     return(pureWordStrings)
   } //end of readWords()
 
-  const readWordsTest = () => {
-    console.log("Testing readWords...")
-    readWords()
-  }
-
-
   const checkWords = (pureWordStrings) => {
     let lowerCase = pureWordStrings.map(v => v.toLowerCase())
     let subWord = {
@@ -366,10 +360,10 @@ const SpeedScrabble = () => {
         let notWord = subWord.word.filter(val => !checkedWords.includes(val))
         // array of correct words
         let yesWord = subWord.word.filter(val => checkedWords.includes(val))
-        console.log("Array of illegal words:")
-        console.log(notWord)
-        console.log("Array of legal words:")
-        console.log(yesWord)
+        // console.log("Array of illegal words:")
+        // console.log(notWord)
+        // console.log("Array of legal words:")
+        // console.log(yesWord)
         if(notWord.length==1){ //if any words are illegal...
           setSeconds(seconds=>seconds+5)
           toast(<>You submitted an illegal word: {notWord[0]}.<br/>
@@ -390,13 +384,13 @@ const SpeedScrabble = () => {
         }
       })
       .catch(e => console.error(e))
-  }
+  } //end of checkWords()
   
   //FINAL STEP IN GAME SUBMISSION: SCORE WORDS. All are legal.
   const scoreWords = (yesWord) => {
     setIsRunning(false)
     let word = yesWord.join('')
-    console.log(word)
+    // console.log(word)
     // const scrabble = {
     //   a: 1,    b: 3,    c: 3,    d: 2,    e: 1,    f: 4,    g: 2,    h: 4,    i: 1,
     //   j: 8,    k: 5,    l: 1,    m: 3,    n: 1,    o: 1,    p: 3,    q: 10,   r: 1,
@@ -411,25 +405,26 @@ const SpeedScrabble = () => {
     }, 0)
 
     let wordBonus = 0
-    yesWord.forEach(word=>{
-      console.log(word)
-      console.log(word.length*word.length)
-      wordBonus = wordBonus + word.length*word.length
-      console.log(wordBonus)
-    })
+    yesWord.forEach(word=>wordBonus = wordBonus + word.length*word.length)
+    document.getElementById("gameDone").innerText="RESULTS"
     console.log("Your Words:")
     console.log(yesWord.join(", "))
+    document.getElementById("wordsSubmitted").innerText="Words Submitted: " + yesWord.join(", ")
     console.log("Letter Value Total: ")
     console.log(letterSum)
+    document.getElementById("letterScore").innerText="Letter Score: "+letterSum
     console.log("Word Length Bonus: ")
     console.log(wordBonus)
+    document.getElementById("wordBonus").innerText="Word Length Bonus: "+wordBonus
     console.log("Raw Score: ")
     console.log(letterSum + wordBonus)
     console.log("Minutes:")
     console.log(seconds/60)
-    let score = Math.floor(10*((letterSum + wordBonus)/(seconds/60)))/10
+    document.getElementById("timeTaken").innerText=seconds + " seconds."
+    let score = Math.floor(10*((letterSum + wordBonus)/(seconds/10)))/10
     console.log("Final Score: ")
     console.log(score)
+    document.getElementById("finalScore").innerText="Final Score:" + score
     let scores = {
       score: score,
       time: seconds,
@@ -445,7 +440,7 @@ const SpeedScrabble = () => {
           .catch(e => console.error(e))
         })
         .catch(e => console.error(e))
-      }
+  } //end of scoreWords()
       
   
 
@@ -456,9 +451,9 @@ const SpeedScrabble = () => {
         <button className="btn pink" onClick={newGame}>START GAME</button>
         <h5 className="right">Game Time: {seconds}</h5>
       </div>
-        <button onClick={readWordsTest}>readWords Test</button>
+        {/* <button onClick={readWordsTest}>readWords Test</button>
         <button onClick={checkWords}>checkWords Test</button>
-        <button onClick={scoreWords}>scoreWords Test</button>
+        <button onClick={scoreWords}>scoreWords Test</button> */}
         <br></br>
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
@@ -489,6 +484,14 @@ const SpeedScrabble = () => {
                           width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset"}}>
                   <h5 className="white-text">{tile}</h5>
                 </div>)}
+            </div>
+            <div className="center">
+              <h5 id="gameDone"></h5>
+              <h6 id="wordsSubmitted"></h6>
+              <h6 id="letterScore"></h6>
+              <h6 id="wordBonus"></h6>
+              <h6 id="timeTaken"></h6>
+              <h6 id="finalScore"></h6>
             </div>
           </div>
 

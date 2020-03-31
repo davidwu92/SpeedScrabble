@@ -7,7 +7,7 @@ import UserAPI from '../../utils/UserAPI'
 import WordAPI from '../../utils/WordAPI'
 import ScoreAPI from '../../utils/ScoreAPI'
 import Axios from 'axios';
-
+import moment from 'moment'
 
 const { getUser } = UserAPI
 const { getWord } = WordAPI
@@ -17,7 +17,7 @@ const SpeedScrabble = () => {
   toast.configure()
   //on pageload, get user info for My past scores.
   const [username, setUsername]=useState("scrabbler")
-  const [myScores, setMyScores]=useState({})
+  const [myScores, setMyScores]=useState({scores: []})
   let token = JSON.parse(JSON.stringify(localStorage.getItem("token")))
   let userId = JSON.parse(JSON.stringify(localStorage.getItem("userId")))
   useEffect(()=>{
@@ -31,7 +31,19 @@ const SpeedScrabble = () => {
   useEffect(()=>{
     getScores(userId)
       .then(({data})=>{
-        setMyScores(data.map(e => e.score))
+        console.log(data)
+        let pastScores = []
+        data.forEach(scoreObj=>{
+          let object = {
+            time: scoreObj.time,
+            formationScore: scoreObj.formationScore,
+            score: scoreObj.score,
+            words: scoreObj.words,
+            date: moment(scoreObj.createdAt).format('MMMM D, YYYY'),
+          }
+          pastScores.push(object)
+        })
+        setMyScores({scores: pastScores})
       })
       .catch(e=>console.error(e))
   },[])
@@ -416,16 +428,20 @@ const SpeedScrabble = () => {
     console.log("Word Length Bonus: ")
     console.log(wordBonus)
     document.getElementById("wordBonus").innerText="Word Length Bonus: "+wordBonus
-    console.log("Raw Score: ")
+    let formationScore = letterSum + wordBonus
+    console.log("Formation Score: ")
     console.log(letterSum + wordBonus)
-    console.log("Minutes:")
-    console.log(seconds/60)
-    document.getElementById("timeTaken").innerText=seconds + " seconds."
-    let score = Math.floor(10*((letterSum + wordBonus)/(seconds/10)))/10
+    document.getElementById("formationScore").innerText="Formation Score: "+formationScore
+    console.log("Time:")
+    console.log(seconds)
+    document.getElementById("timeTaken").innerText="Time: "+seconds + " seconds"
+    
+    let score = Math.floor(10*((letterSum + wordBonus)-(Math.sqrt(seconds))))/10
     console.log("Final Score: ")
     console.log(score)
     document.getElementById("finalScore").innerText="Final Score:" + score
     let scores = {
+      formationScore: formationScore,
       score: score,
       time: seconds,
       words: yesWord.join(", "),
@@ -435,13 +451,27 @@ const SpeedScrabble = () => {
       .then(() => {
         getScores(userId)
           .then(({ data }) => {
-            setMyScores(data.map(e => e.score))
+            let pastScores = []
+            data.forEach(scoreObj=>{
+              let object = {
+                time: scoreObj.time,
+                formationScore: scoreObj.formationScore,
+                score: scoreObj.score,
+                words: scoreObj.words,
+                date: moment(scoreObj.createdAt).format('MMMM D, YYYY'),
+              }
+              pastScores.push(object)
+            })
+            setMyScores({scores: pastScores})
           })
           .catch(e => console.error(e))
         })
         .catch(e => console.error(e))
   } //end of scoreWords()
-      
+  
+  const seeScores = () =>{
+    console.log(myScores)
+  }
   
 
   return(
@@ -452,8 +482,8 @@ const SpeedScrabble = () => {
         <h5 className="right">Game Time: {seconds}</h5>
       </div>
         {/* <button onClick={readWordsTest}>readWords Test</button>
-        <button onClick={checkWords}>checkWords Test</button>
-        <button onClick={scoreWords}>scoreWords Test</button> */}
+        <button onClick={checkWords}>checkWords Test</button> */}
+        <button onClick={seeScores}>SEE SCORES TEST</button>
         <br></br>
         {/* GAME */}
         <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
@@ -461,15 +491,15 @@ const SpeedScrabble = () => {
           {/* MY HAND + TILESWAP */}
           <div className="col s12 m5 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
             <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
-              <h5>{swapCount} swaps left.</h5>
+              <h5>TILE SWAP</h5>
               <div id="swapTile" className="valign-wrapper"
                 onDrop={swapOneTile}
                 onDragOver={allowDrop}
-              ><h5 className="white-text center">{swapCount ? "TILE SWAP" : "OUT OF SWAPS"}</h5>
+              ><h5 className="white-text center">{swapCount ? `TILE SWAP (${swapCount})` : "OUT OF SWAPS"}</h5>
               </div>
             </div>
             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
-              <h5>{username}'s hand</h5>
+              <h5>{username.toUpperCase()}'S HAND</h5>
               {handLetters.map((tile, index)=>
                 <div 
                   draggable={!handUsed[index]}
@@ -485,11 +515,13 @@ const SpeedScrabble = () => {
                   <h5 className="white-text">{tile}</h5>
                 </div>)}
             </div>
-            <div className="center">
+
+            <div className="center row">
               <h5 id="gameDone"></h5>
               <h6 id="wordsSubmitted"></h6>
               <h6 id="letterScore"></h6>
               <h6 id="wordBonus"></h6>
+              <h6 id="formationScore"></h6>
               <h6 id="timeTaken"></h6>
               <h6 id="finalScore"></h6>
             </div>
@@ -522,18 +554,36 @@ const SpeedScrabble = () => {
           </div>
           
           <div className="col s12 m1 l1 center">
-            <button className="btn black" onClick={readWords}>DONE</button>
+            <button className="btn-large black" onClick={readWords}>DONE</button>
           </div>
         </div> {/* END GAME CONTAINER */}
         
         <div className="row center">
-            <h5>{username}'s Score History</h5>
-            {myScores.length ? myScores.map(score=>(
-              <>
-                <ul>{score}</ul>
-              </>
-              ))
-              :null}
+            <table className="centered responsive-table">
+              <thead>
+                <tr className="blue lighten-4 blue-grey-text text-darken-4">
+                  {/* <th>Game #</th> */}
+                  <th>Date</th>
+                  <th>Formation Score</th>
+                  <th>Time</th>
+                  <th>Final Score</th>
+                  <th>Words</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {
+                    myScores.scores.length ? myScores.scores.map((object, index)=>
+                      <tr>
+                        {/* <td>{index+1}</td> */}
+                        <td>{object.date}</td>
+                        <td>{object.formationScore}</td>
+                        <td>{object.time} seconds</td>
+                        <td>{object.score}</td>
+                        <td>{object.words}</td>
+                      </tr>) : null
+                  }
+              </tbody>
+            </table>
         </div>
 
     </>

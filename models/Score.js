@@ -1,5 +1,6 @@
 module.exports = (model, Schema) => {
   const Score = new Schema({
+      formationScore: { type: Number, required:true },
       score: { type: Number, required:true },
       time: {type: Number },
       words: {type: String},

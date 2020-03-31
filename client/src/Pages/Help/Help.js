@@ -40,11 +40,12 @@ const Help = () => {
         <h5 className="center">Your Formation Score is the sum of your Letter Score and Word Length Bonus.</h5>
         <br/>
         <br/>
-        <h5 className="center">Time Factor</h5>
-        <h6 className="center">Your final score is calculated by dividing the formation score by ten times the number of seconds gone by.</h6>
-        <li>If you take exactly ten seconds to complete your crossword and submit, your score will simply be Letter Score + Word Length Bonus.</li>
-        <li>But if the same crossword formation were to be completed in 20 seconds, the score would be HALF as great.</li>
-        <li>Theoretically, if you are able to complete the crossword in 1 second, your formation's score would be multiplied by TEN.</li>
+        <h5 className="center">Time Deduction</h5>
+        <h6 className="center">Your final score takes your formation score and subtracts the square root of the seconds elapsed.</h6>
+        <li>In other words, completing and submitting a 100-point formation in 81 seconds would result in a final score of 100 - 9: 91.</li>
+        <li>If the same 100-point formation were submitted in 400 seconds, the final score would be 100 - 20: 80 points.</li>
+        <li>Minimize the time deduction by working quickly and minimizing the number of time penalties applied!</li>
+        <li></li>
       </div>
 
       <div className="row blue white-text">

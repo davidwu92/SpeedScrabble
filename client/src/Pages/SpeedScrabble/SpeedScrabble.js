@@ -546,27 +546,27 @@ const SpeedScrabble = () => {
     let wordBonus = 0
     yesWord.forEach(word=>wordBonus = wordBonus + word.length*word.length)
     document.getElementById("gameDone").innerText="RESULTS"
-    console.log("Your Words:")
-    console.log(yesWord.join(", "))
+    // console.log("Your Words:")
+    // console.log(yesWord.join(", "))
     document.getElementById("wordsSubmitted").innerText="Words Submitted: " + yesWord.join(", ")
-    console.log("Letter Value Total: ")
-    console.log(letterSum)
+    // console.log("Letter Value Total: ")
+    // console.log(letterSum)
     document.getElementById("letterScore").innerText="Letter Score: "+letterSum
-    console.log("Word Length Bonus: ")
-    console.log(wordBonus)
+    // console.log("Word Length Bonus: ")
+    // console.log(wordBonus)
     document.getElementById("wordBonus").innerText="Word Length Bonus: "+wordBonus
     let formationScore = letterSum + wordBonus
-    console.log("Formation Score: ")
-    console.log(letterSum + wordBonus)
+    // console.log("Formation Score: ")
+    // console.log(letterSum + wordBonus)
     document.getElementById("formationScore").innerText="Formation Score: "+formationScore
-    console.log("Time:")
-    console.log(seconds)
+    // console.log("Time:")
+    // console.log(seconds)
     document.getElementById("timeTaken").innerText="Time: "+seconds + " seconds"
     
     let score = Math.floor(10*((letterSum + wordBonus)-(Math.sqrt(seconds))))/10
     console.log("Final Score: ")
     console.log(score)
-    document.getElementById("finalScore").innerText="Final Score:" + score
+    document.getElementById("finalScore").innerText="Final Score: " + score
     let scores = {
       formationScore: formationScore,
       score: score,

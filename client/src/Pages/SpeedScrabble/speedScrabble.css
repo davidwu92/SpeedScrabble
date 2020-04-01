@@ -17,7 +17,6 @@ and (max-device-width : 600px){
     height: 8.5vw !important;
     padding: 1vw !important;
     margin: 1 !important;
-    /* border: 1px !important; */
   }
   #gridRow {
     height: 8.5vw
@@ -45,7 +44,6 @@ and (max-device-width : 992px){
     height: 8.5vw !important;
     padding: 1vw !important;
     margin: 1 !important;
-    /* border: 1px !important; */
   }
   #gridRow {
     height: 8.5vw

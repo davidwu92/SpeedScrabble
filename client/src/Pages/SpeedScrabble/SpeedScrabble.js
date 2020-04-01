@@ -84,17 +84,28 @@ const SpeedScrabble = () => {
   const allowDrop = e=>e.preventDefault()
   
   //HAND or GRID: Starting to drag a tile.
-  const dragStart = (e) => {
+  const dragStart = (e) => { //MOUSE EVENTS
     //Tiles in hand have dataset.tile for LETTER + Hand Num
     //Tiles placed on board have dataset.tile AND dataset.coordinates
+    console.log(e)
     e.dataTransfer.setData("tile", e.target.dataset.tile)
     e.dataTransfer.setData("coordinates", e.target.dataset.coordinates)
+    console.log(e.dataTransfer.getData("tile"))
+    console.log(e.dataTransfer.getData("coordinates"))
   }
+  const touchStart = (e) =>{ //TOUCH EVENTS
+    console.log(e)
+    console.log(e.currentTarget.dataset.tile)
+    // e.currentTarget.dataTransfer.setData("tile", e.currentTarget.dataset.tile)
+  }
+
   //HAND or GRID: Allow things to drag over.
   const dragOver = e => e.stopPropagation()
-  
+  const touchOver = e => e.stopPropagation()
+
   //GRID: dropping tiles onto grid (from anywhere)
-  const dropTile = e => { //e represents the grid event of DROPPING A TILE.
+  const dropTile = e => { //e represents the grid's mouse event of DROPPING A TILE.
+    console.log(e)
     e.preventDefault()
     let tileData = e.dataTransfer.getData("tile") //LETTER+HANDNUM of dragged tile.
     let dropPosition = e.target.dataset.coordinates
@@ -135,11 +146,17 @@ const SpeedScrabble = () => {
       {autoClose: 5000,hideProgressBar: true,type: "error"})
     }
   }
+  const touchEnd = e => {
+    e.preventDefault()
+    console.log(e)
+  }
+
   //GRID: onClick check grid space info.
   const seeData = (e)=>{
     console.log("dataset.tile: " +e.target.dataset.tile)
     console.log("dataset.coordinates: "+e.target.dataset.coordinates)
   }
+
   const [swapCount, setSwapCount] = useState(3)
   //SWAP BOX: dropping a tile into the swap-tile area.
   const swapOneTile = e =>{
@@ -181,8 +198,6 @@ const SpeedScrabble = () => {
   const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "~", "S", "T", "A", "R", "T"])
   //Used Letters from my hand.
   const [handUsed, setHandUsed] = useState([true,true,true,true,true,true,true,true,true,true,true,true,])
-  //Starting Hand tracked for final score?
-  const [startingHand, setStartingHand] = useState("")
 
   //currently not using this.
   const shuffleHand = () =>{
@@ -219,7 +234,6 @@ const SpeedScrabble = () => {
       newHand.push(scrabbleLetters[letterNumber])
     }
     setHandLetters(newHand)
-    setStartingHand(newHand.join(''))
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
 
@@ -507,13 +521,15 @@ const SpeedScrabble = () => {
                   draggable={!handUsed[index]}
                   onDragStart={dragStart}
                   onDragOver={dragOver}
+                  onTouchStart={touchStart}
+                  onTouchMove={touchOver}
                   data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
                   id="handTile"
                   className="center" 
                   style={!handUsed[index] ? {backgroundColor: "red", margin:"2px", padding:"1vw",
-                          width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset"}
+                          width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset", touchAction: "none"}
                         :{backgroundColor: "grey", margin:"2px",padding:"1vw",
-                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset"}}>
+                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset", touchAction: "none"}}>
                   <h5 className="white-text">{tile}</h5>
                 </div>)}
             </div>
@@ -541,12 +557,14 @@ const SpeedScrabble = () => {
                         onDragStart={dragStart}
                         onDrop={dropTile}
                         onDragOver={allowDrop}
+                        onTouchStart={touchStart}
+                        onTouchEnd={touchEnd}
                         onClick={seeData}
                         id="gridSquare"
                         data-tile={square} //dataset.tile = LETTER+HAND NUMBER or "NULL"
                         data-coordinates={""+colNum+rowNum}
                         style={{backgroundColor: square=="Null"? "floralwhite":"red", width:"4vw", height:"4vw", padding:"1vw",
-                              display:"inline-block", borderStyle: square=="Null"?"dashed":"outset", borderWidth:"1px"}}>
+                              display:"inline-block", borderStyle: square=="Null"?"dashed":"outset", borderWidth:"1px", touchAction: "none"}}>
                       <h5 data-tile={square} data-coordinates={""+colNum+rowNum} className="center white-text"
                           style={square=="Null"? {visibility:"hidden"}:{visibility:"visible"}}>
                           {square[0]}</h5>

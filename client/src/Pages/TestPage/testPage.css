@@ -1,15 +1,10 @@
 /* TILES AND LETTERS ARE h5 */
-h5 {
+/* h5 {
   margin:0px
-}
-
-#gameRow {
-  width: 100%;
-  padding: 1vw 0px 1vw 0px;
-}
+} */
 
 /* SMALL SCREEN STYLING */
-@media only screen 
+/* @media only screen 
 and (min-device-width : 300px) 
 and (max-device-width : 600px){
   #handTile, #gridSquare{
@@ -17,7 +12,6 @@ and (max-device-width : 600px){
     height: 8.5vw !important;
     padding: 1vw !important;
     margin: 1 !important;
-    /* border: 1px !important; */
   }
   #gridRow {
     height: 8.5vw
@@ -35,9 +29,10 @@ and (max-device-width : 600px){
     font-size: medium;
     margin: 2px;
   }
-}
+} */
+
 /* MEDIUM SCREEN STYLING */
-@media only screen 
+/* @media only screen 
 and (min-device-width : 601px)
 and (max-device-width : 992px){
   #handTile, #gridSquare{
@@ -45,7 +40,6 @@ and (max-device-width : 992px){
     height: 8.5vw !important;
     padding: 1vw !important;
     margin: 1 !important;
-    /* border: 1px !important; */
   }
   #gridRow {
     height: 8.5vw
@@ -63,10 +57,10 @@ and (max-device-width : 992px){
     font-size: xx-large;
     margin: 2px;
   }
-}
+} */
 
 /* LARGE SCREEN STYLING */
-@media only screen 
+/* @media only screen 
 and (min-device-width : 993px){
   #handTile #gridSquare {
     width: 4vw !important;
@@ -74,9 +68,6 @@ and (min-device-width : 993px){
   }
   #gridRow {
     height: 4vw
-  }
-  #gridBoardRow{
-    width: 46%
   }
   #swapTile {
     background-color: limegreen;
@@ -87,4 +78,4 @@ and (min-device-width : 993px){
     padding:1vw;
     left: 25%;
   }
-}
+} */

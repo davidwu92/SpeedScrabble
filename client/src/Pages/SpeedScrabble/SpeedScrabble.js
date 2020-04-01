@@ -20,6 +20,7 @@ const SpeedScrabble = () => {
   const [myScores, setMyScores]=useState({scores: []})
   let token = JSON.parse(JSON.stringify(localStorage.getItem("token")))
   let userId = JSON.parse(JSON.stringify(localStorage.getItem("userId")))
+//get username
   useEffect(()=>{
     getUser(token)
       .then(({data})=>{
@@ -177,7 +178,7 @@ const SpeedScrabble = () => {
 
 //MY HAND
   //Letters in my hand.
-  const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "S", "T", "A", "R", "T","!"])
+  const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "~", "S", "T", "A", "R", "T"])
   //Used Letters from my hand.
   const [handUsed, setHandUsed] = useState([true,true,true,true,true,true,true,true,true,true,true,true,])
   //Starting Hand tracked for final score?
@@ -481,15 +482,16 @@ const SpeedScrabble = () => {
         <button className="btn pink" onClick={newGame}>START GAME</button>
         <h5 className="right">Game Time: {seconds}</h5>
       </div>
-        {/* <button onClick={readWordsTest}>readWords Test</button>
-        <button onClick={checkWords}>checkWords Test</button> */}
-        <button onClick={seeScores}>SEE SCORES TEST</button>
+        {/* <button onClick={readWordsTest}>readWords Test</button> */}
+        {/* <button onClick={checkWords}>checkWords Test</button> */}
+        {/* <button onClick={seeScores}>SEE SCORES TEST</button> */}
         <br></br>
+        
         {/* GAME */}
-        <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
+        <div className="row white" id="gameRow">
           
           {/* MY HAND + TILESWAP */}
-          <div className="col s12 m5 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
+          <div className="col s12 m12 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
             <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
               <h5>TILE SWAP</h5>
               <div id="swapTile" className="valign-wrapper"
@@ -528,7 +530,7 @@ const SpeedScrabble = () => {
           </div>
 
           {/* GRID BOARD */}
-          <div className="col s12 m6 l6 center">
+          <div className="col s12 m12 l6 center" id="gridBoardRow">
             {grid.map((row, rowNum)=>(
               <div id="gridRow" 
                 // className="center"
@@ -553,11 +555,14 @@ const SpeedScrabble = () => {
             ))}
           </div>
           
-          <div className="col s12 m1 l1 center">
+          {/* DONE BUTTON */}
+          <div className="col s12 m12 l1 center">
+            <br></br>
             <button className="btn-large black" onClick={readWords}>DONE</button>
           </div>
         </div> {/* END GAME CONTAINER */}
         
+        {/* SCORE HISTORY TABLE */}
         <div className="row center">
             <table className="centered responsive-table">
               <thead>

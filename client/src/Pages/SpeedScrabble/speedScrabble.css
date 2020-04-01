@@ -27,7 +27,7 @@ and (max-device-width : 600px){
     width: 18vw !important;
     height: 18vw !important;
     position: relative;
-    padding:3vw;
+    padding:1vw;
     left: 25%;
   }
   h5{
@@ -40,21 +40,21 @@ and (max-device-width : 600px){
 and (min-device-width : 601px)
 and (max-device-width : 992px){
   #handTile, #gridSquare{
-    width: 8.5vw !important;
-    height: 8.5vw !important;
+    width: 8vw !important;
+    height: 8vw !important;
     padding: 1vw !important;
     margin: 1 !important;
   }
   #gridRow {
-    height: 8.5vw
+    height: 8vw
   }
   #swapTile {
     background-color: limegreen;
     border-style:inset;
-    width: 18vw !important;
-    height: 18vw !important;
+    width: 16vw !important;
+    height: 16vw !important;
     position: relative;
-    padding:3.5vw;
+    padding:1vw;
     left: 25%;
   }
   h5{
@@ -79,8 +79,8 @@ and (min-device-width : 993px){
   #swapTile {
     background-color: limegreen;
     border-style:inset;
-    width: 8vw !important;
-    height: 8vw !important;
+    width: 9vw !important;
+    height: 9vw !important;
     position: relative;
     padding:1vw;
     left: 25%;

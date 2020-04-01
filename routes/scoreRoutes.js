@@ -2,7 +2,15 @@ const { Score, User } = require('../models')
 
 module.exports = app => {
 
-  //GET SCORES
+  // GET ALL SCORES for Leaderboard
+  app.get('/scores', (req, res) => {
+    Score.find().sort({ score: -1 }).limit(10)
+      .populate('userLink')
+      .then(scores => res.json(scores))
+      .catch(e => console.error(e))
+  })
+
+  //GET USER SCORES
   app.get('/scores/:id', (req, res) => {
     Score.find({ userLink: req.params.id })
       .populate('userLink')

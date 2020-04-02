@@ -41,9 +41,9 @@ const Help = () => {
         <br/>
         <br/>
         <h5 className="center">Time Deduction</h5>
-        <h6 className="center">Your final score takes your formation score and subtracts the square root of the seconds elapsed.</h6>
-        <li>In other words, completing and submitting a 100-point formation in 81 seconds would result in a final score of 100 - 9: 91.</li>
-        <li>If the same 100-point formation were submitted in 400 seconds, the final score would be 100 - 20: 80 points.</li>
+        <h6 className="center">Your final score takes your formation score and subtracts 5x the square root of the seconds elapsed.</h6>
+        <li>In other words, completing and submitting a 100-point formation in 81 seconds would result in a final score of 100 - 9x5: 55.</li>
+        <li>If the same 100-point formation were submitted in 400 seconds, the final score would be 100 - 20x5: 0 points!</li>
         <li>Minimize the time deduction by working quickly and minimizing the number of time penalties applied!</li>
         <li></li>
       </div>

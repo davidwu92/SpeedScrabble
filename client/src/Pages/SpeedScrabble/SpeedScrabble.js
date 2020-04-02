@@ -563,7 +563,7 @@ const SpeedScrabble = () => {
     // console.log(seconds)
     document.getElementById("timeTaken").innerText="Time: "+seconds + " seconds"
     
-    let score = Math.floor(10*((letterSum + wordBonus)-(Math.sqrt(seconds))))/10
+    let score = Math.floor(10*((letterSum + wordBonus)-(5*Math.sqrt(seconds))))/10
     console.log("Final Score: ")
     console.log(score)
     document.getElementById("finalScore").innerText="Final Score: " + score

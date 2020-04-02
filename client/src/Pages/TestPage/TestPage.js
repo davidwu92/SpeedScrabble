@@ -600,134 +600,134 @@ const TestPage = () => {
   //   console.log(myScores)
   // }
   
+  return(<>Test Page</>)
+  // return(
+  //   <>
+  //     <div onTouchStart={selectedTile ? touchStart : null}> {/* ENTIRE PAGE IN THIS DIV; allows for deselect. */}
+  //       <div className="container">
+  //         <h3 className="center">Speed Scrabble TESTPAGE</h3>
 
-  return(
-    <>
-      <div onTouchStart={selectedTile ? touchStart : null}> {/* ENTIRE PAGE IN THIS DIV; allows for deselect. */}
-        <div className="container">
-          <h3 className="center">Speed Scrabble TESTPAGE</h3>
-
-        </div>
-          {/* <button onClick={seeSelected}>SEE SELECTED</button> */}
-          {/* <button onClick={checkWords}>checkWords Test</button> */}
-          {/* <button onClick={seeScores}>SEE SCORES TEST</button> */}
-          <br></br>
+  //       </div>
+  //         {/* <button onClick={seeSelected}>SEE SELECTED</button> */}
+  //         {/* <button onClick={checkWords}>checkWords Test</button> */}
+  //         {/* <button onClick={seeScores}>SEE SCORES TEST</button> */}
+  //         <br></br>
           
-          {/* GAME */}
-          <div className="row white" id="gameRow">
+  //         {/* GAME */}
+  //         <div className="row white" id="gameRow">
             
-            {/* MY HAND + TILESWAP */}
-            <div className="col s12 m12 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
-              <div className="col s12 m12 l12 center">
-                <button className="btn-large pink left" onClick={newGame}>START GAME</button>
-                <h4 style={{display: "inline"}}>Game Time: {seconds}</h4>
-                <button className="btn-large black right" onClick={readWords}>DONE</button>
-              </div>
-              <br/>
-              <br/>
-              <br/>
-              <br/>
-              <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
-                <h5>TILE SWAP</h5>
-                <div id="swapTile" className="valign-wrapper"
-                  data-swap="tileSwap"
-                  onDrop={swapOneTile}
-                  onDragOver={allowDrop}
-                  onTouchStart={touchStart}
-                ><h5 className="white-text center">{swapCount ? `TILE SWAP (${swapCount})` : "OUT OF SWAPS"}</h5>
-                </div>
-              </div>
-              <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
-                <h5>{username.toUpperCase()}'S HAND</h5>
-                {handLetters.map((tile, index)=>
-                  <div 
-                    draggable={!handUsed[index]}
-                    onDragStart={dragStart}
-                    onDragOver={dragOver}
-                    onTouchStart={touchStart} //touching a tile SELECTS it.
-                    data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
-                    id="handTile"
-                    className="center" 
-                    style={!handUsed[index] ? {backgroundColor: (selectedTile==tile+index && !selectedSpace) ? "green":"red", margin:"2px", padding:"1vw",
-                            width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset", touchAction: "none"}
-                          :{backgroundColor: "grey", margin:"2px",padding:"1vw",
-                            width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset", touchAction: "none"}}>
-                    <h5 className="white-text">{tile}</h5>
-                  </div>)}
-              </div>
+  //           {/* MY HAND + TILESWAP */}
+  //           <div className="col s12 m12 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
+  //             <div className="col s12 m12 l12 center">
+  //               <button className="btn-large pink left" onClick={newGame}>START GAME</button>
+  //               <h4 style={{display: "inline"}}>Game Time: {seconds}</h4>
+  //               <button className="btn-large black right" onClick={readWords}>DONE</button>
+  //             </div>
+  //             <br/>
+  //             <br/>
+  //             <br/>
+  //             <br/>
+  //             <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
+  //               <h5>TILE SWAP</h5>
+  //               <div id="swapTile" className="valign-wrapper"
+  //                 data-swap="tileSwap"
+  //                 onDrop={swapOneTile}
+  //                 onDragOver={allowDrop}
+  //                 onTouchStart={touchStart}
+  //               ><h5 className="white-text center">{swapCount ? `TILE SWAP (${swapCount})` : "OUT OF SWAPS"}</h5>
+  //               </div>
+  //             </div>
+  //             <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
+  //               <h5>{username.toUpperCase()}'S HAND</h5>
+  //               {handLetters.map((tile, index)=>
+  //                 <div 
+  //                   draggable={!handUsed[index]}
+  //                   onDragStart={dragStart}
+  //                   onDragOver={dragOver}
+  //                   onTouchStart={touchStart} //touching a tile SELECTS it.
+  //                   data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
+  //                   id="handTile"
+  //                   className="center" 
+  //                   style={!handUsed[index] ? {backgroundColor: (selectedTile==tile+index && !selectedSpace) ? "green":"red", margin:"2px", padding:"1vw",
+  //                           width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset", touchAction: "none"}
+  //                         :{backgroundColor: "grey", margin:"2px",padding:"1vw",
+  //                           width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset", touchAction: "none"}}>
+  //                   <h5 className="white-text">{tile}</h5>
+  //                 </div>)}
+  //             </div>
 
-              <div className="center">
-                <h5 id="gameDone"></h5>
-                <h6 id="wordsSubmitted"></h6>
-                <h6 id="letterScore"></h6>
-                <h6 id="wordBonus"></h6>
-                <h6 id="formationScore"></h6>
-                <h6 id="timeTaken"></h6>
-                <h6 id="finalScore"></h6>
-              </div>
-            </div>
+  //             <div className="center">
+  //               <h5 id="gameDone"></h5>
+  //               <h6 id="wordsSubmitted"></h6>
+  //               <h6 id="letterScore"></h6>
+  //               <h6 id="wordBonus"></h6>
+  //               <h6 id="formationScore"></h6>
+  //               <h6 id="timeTaken"></h6>
+  //               <h6 id="finalScore"></h6>
+  //             </div>
+  //           </div>
 
-            {/* GRID BOARD */}
-            <div className="col s12 m12 l7 center" id="gridBoardRow">
-              {grid.map((row, rowNum)=>(
-                <div id="gridRow" 
-                  // className="center"
-                >
-                  {row.map((square, colNum)=>
-                    (<div className="gridSquare" 
-                          draggable={square=="Null"? false : true}
-                          onDragStart={dragStart}
-                          onDrop={dropTile}
-                          onDragOver={allowDrop}
-                          onTouchStart={touchStart}
-                          onClick={seeData}
-                          id="gridSquare"
-                          data-tile={square} //dataset.tile = LETTER+HAND NUMBER or "NULL"
-                          data-coordinates={""+colNum+rowNum}
-                          style={{backgroundColor: square=="Null"? "floralwhite": (selectedTile==square && selectedSpace) ? "green":"red",
-                                width:"4vw", height:"4vw", padding:"1vw", display:"inline-block", 
-                                borderStyle: square=="Null"?"dashed":"outset", borderWidth:"1px", borderColor: square=="Null"?"goldenrod":null,touchAction: "none"}}>
-                        <h5 data-tile={square} data-coordinates={""+colNum+rowNum} className="center white-text"
-                            style={square=="Null"? {visibility:"hidden"}:{visibility:"visible"}}>
-                            {square[0]}</h5>
-                      </div>))}
-                </div>
-              ))}
-            </div>
+  //           {/* GRID BOARD */}
+  //           <div className="col s12 m12 l7 center" id="gridBoardRow">
+  //             {grid.map((row, rowNum)=>(
+  //               <div id="gridRow" 
+  //                 // className="center"
+  //               >
+  //                 {row.map((square, colNum)=>
+  //                   (<div className="gridSquare" 
+  //                         draggable={square=="Null"? false : true}
+  //                         onDragStart={dragStart}
+  //                         onDrop={dropTile}
+  //                         onDragOver={allowDrop}
+  //                         onTouchStart={touchStart}
+  //                         onClick={seeData}
+  //                         id="gridSquare"
+  //                         data-tile={square} //dataset.tile = LETTER+HAND NUMBER or "NULL"
+  //                         data-coordinates={""+colNum+rowNum}
+  //                         style={{backgroundColor: square=="Null"? "floralwhite": (selectedTile==square && selectedSpace) ? "green":"red",
+  //                               width:"4vw", height:"4vw", padding:"1vw", display:"inline-block", 
+  //                               borderStyle: square=="Null"?"dashed":"outset", borderWidth:"1px", borderColor: square=="Null"?"goldenrod":null,touchAction: "none"}}>
+  //                       <h5 data-tile={square} data-coordinates={""+colNum+rowNum} className="center white-text"
+  //                           style={square=="Null"? {visibility:"hidden"}:{visibility:"visible"}}>
+  //                           {square[0]}</h5>
+  //                     </div>))}
+  //               </div>
+  //             ))}
+  //           </div>
             
-          </div> {/* END GAME CONTAINER */}
+  //         </div> {/* END GAME CONTAINER */}
           
-          {/* SCORE HISTORY TABLE */}
-          <div className="row center">
-              <table className="centered responsive-table">
-                <thead>
-                  <tr className="blue lighten-4 blue-grey-text text-darken-4">
-                    {/* <th>Game #</th> */}
-                    <th>Date</th>
-                    <th>Formation Score</th>
-                    <th>Time</th>
-                    <th>Final Score</th>
-                    <th>Words</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {
-                      myScores.scores.length ? myScores.scores.map((object, index)=>
-                        <tr>
-                          {/* <td>{index+1}</td> */}
-                          <td>{object.date}</td>
-                          <td>{object.formationScore}</td>
-                          <td>{object.time} seconds</td>
-                          <td>{object.score}</td>
-                          <td>{object.words}</td>
-                        </tr>) : null
-                    }
-                </tbody>
-              </table>
-          </div>
-      </div>
-    </>
-  )
+  //         {/* SCORE HISTORY TABLE */}
+  //         <div className="row center">
+  //             <table className="centered responsive-table">
+  //               <thead>
+  //                 <tr className="blue lighten-4 blue-grey-text text-darken-4">
+  //                   {/* <th>Game #</th> */}
+  //                   <th>Date</th>
+  //                   <th>Formation Score</th>
+  //                   <th>Time</th>
+  //                   <th>Final Score</th>
+  //                   <th>Words</th>
+  //                 </tr>
+  //               </thead>
+  //               <tbody>
+  //                   {
+  //                     myScores.scores.length ? myScores.scores.map((object, index)=>
+  //                       <tr>
+  //                         {/* <td>{index+1}</td> */}
+  //                         <td>{object.date}</td>
+  //                         <td>{object.formationScore}</td>
+  //                         <td>{object.time} seconds</td>
+  //                         <td>{object.score}</td>
+  //                         <td>{object.words}</td>
+  //                       </tr>) : null
+  //                   }
+  //               </tbody>
+  //             </table>
+  //         </div>
+  //     </div>
+  //   </>
+  // )
 }
 
 export default TestPage

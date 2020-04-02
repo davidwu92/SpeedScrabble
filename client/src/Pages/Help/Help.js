@@ -37,11 +37,11 @@ const Help = () => {
           <li>And the Word Length Bonus of a formation with ELEVEN 2-letter words would be 11 times 4: 44.</li>
           <li>Thusly, having longer words and having more words will correlate to a greater Word Length Bonus!</li>
         <br/>
-        <h5 className="center">Your Formation Score is the sum of your Letter Score and Word Length Bonus.</h5>
+        <h5 className="center">Your Board Score is the sum of your Letter Score and Word Length Bonus.</h5>
         <br/>
         <br/>
         <h5 className="center">Time Deduction</h5>
-        <h6 className="center">Your final score takes your formation score and subtracts 5x the square root of the seconds elapsed.</h6>
+        <h6 className="center">Your final score takes your Board Score and subtracts 5x the square root of the seconds elapsed.</h6>
         <li>In other words, completing and submitting a 100-point formation in 81 seconds would result in a final score of 100 - 9x5: 55.</li>
         <li>If the same 100-point formation were submitted in 400 seconds, the final score would be 100 - 20x5: 0 points!</li>
         <li>Minimize the time deduction by working quickly and minimizing the number of time penalties applied!</li>

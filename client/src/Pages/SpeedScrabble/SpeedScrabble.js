@@ -144,7 +144,7 @@ const SpeedScrabble = () => {
   }
 
   //SWAP BOX: dropping a tile into the swap-tile area.
-  const [swapCount, setSwapCount] = useState(3)
+  const [swapCount, setSwapCount] = useState(10)
   const swapOneTile = e =>{
     if(swapCount>0){
       e.preventDefault()
@@ -321,7 +321,7 @@ const SpeedScrabble = () => {
 //NEW GAME BUTTON
   const newGame = () =>{
     //Start Timer from zero, reset grid, deal tiles for hand.
-    setSwapCount(3)
+    setSwapCount(10)
     setSeconds(0)
     setIsRunning(true)
     setGrid([ ["Null","Null","Null","Null","Null","Null","Null","Null","Null","Null"],
@@ -364,7 +364,7 @@ const SpeedScrabble = () => {
 
     let tilePositions = [] //["rowNum+colNum", ...]
 
-    //GET ALL HORIZONTAL WORDS
+    //GETTING HORIZONTAL WORDS
     let xWordsFound = [] //xWordsFound = [["rowNum+colNum+letter+handNum", ],[],[]]
     grid.forEach((row, rowNum)=>{
       let nullIndex = -1
@@ -515,7 +515,7 @@ const SpeedScrabble = () => {
           {autoClose: 5000,hideProgressBar: true,type: "error"})
         } else if (notWord.length > 2){
           setSeconds(seconds=>5*notWord.length+seconds)
-          toast(<>You submitted {notWord.length} illegal words: {notWord.slice(0, notWord.length-1).join(", ")} and {notWord[notWord.length-1]}.<br/>
+          toast(<>You submitted {notWord.length} illegal words: {notWord.slice(0, notWord.length-1).join(", ")}, and {notWord[notWord.length-1]}.<br/>
                   {5*notWord.length} second penalty added.</>, 
           {autoClose: 5000,hideProgressBar: true,type: "error"})
         } else { //ALL WORDS ARE LEGAL.
@@ -529,11 +529,6 @@ const SpeedScrabble = () => {
   const scoreWords = (yesWord) => {
     setIsRunning(false)
     let word = yesWord.join('')
-    // console.log(word)
-    // const scrabble = {
-    //   a: 1,    b: 3,    c: 3,    d: 2,    e: 1,    f: 4,    g: 2,    h: 4,    i: 1,
-    //   j: 8,    k: 5,    l: 1,    m: 3,    n: 1,    o: 1,    p: 3,    q: 10,   r: 1,
-    //   s: 1,    t: 1,    u: 1,    v: 4,    w: 4,    x: 8,    y: 4,    z: 10    }
     const newLetterValues = { //no points worth more than 8.
       a: 5,    b: 6,    c: 6,    d: 5,    e: 5,    f: 6,    g: 5,    h: 6,    i: 5,
       j: 8,    k: 7,    l: 5,    m: 6,    n: 5,    o: 5,    p: 6,    q: 8,   r: 5,
@@ -548,7 +543,7 @@ const SpeedScrabble = () => {
     document.getElementById("gameDone").innerText="RESULTS"
     // console.log("Your Words:")
     // console.log(yesWord.join(", "))
-    document.getElementById("wordsSubmitted").innerText="Words Submitted: " + yesWord.join(", ")
+    document.getElementById("wordsSubmitted").innerText="Words Submitted: " + yesWord.join(", ").toUpperCase()
     // console.log("Letter Value Total: ")
     // console.log(letterSum)
     document.getElementById("letterScore").innerText="Letter Score: "+letterSum
@@ -558,7 +553,7 @@ const SpeedScrabble = () => {
     let formationScore = letterSum + wordBonus
     // console.log("Formation Score: ")
     // console.log(letterSum + wordBonus)
-    document.getElementById("formationScore").innerText="Formation Score: "+formationScore
+    document.getElementById("formationScore").innerText="Board Score: "+formationScore
     // console.log("Time:")
     // console.log(seconds)
     document.getElementById("timeTaken").innerText="Time: "+seconds + " seconds"
@@ -599,28 +594,65 @@ const SpeedScrabble = () => {
   // const seeScores = () =>{
   //   console.log(myScores)
   // }
-  
+  const personalBest = () =>{
+    let scoresArray = []
+    let timeArray=[]
+    myScores.scores.forEach(object=>{
+      scoresArray.push(object.score)
+      timeArray.push(object.time)
+    })
+    let bestTime = Math.min(...timeArray)
+    let hiScore = Math.max(...scoresArray)
+    return [hiScore, bestTime]
+  }
+
+  const renderResults = !isRunning && seconds>0 ? <>
+    <div className="col s12 m12 l12 blue white-text">
+      <h5 id="gameDone" style={{fontWeight:"bold"}}></h5>
+      <h6 id="wordsSubmitted"></h6>
+      <h6 id="letterScore"></h6>
+      <h6 id="wordBonus"></h6>
+      <h6 id="formationScore"></h6>
+      <h6 id="timeTaken"></h6>
+      <h6 id="finalScore" style={{fontWeight:"bold"}}></h6>
+    </div>
+  </> : null
 
   return(
     <>
       <div onTouchStart={selectedTile ? touchStart : null}> {/* ENTIRE PAGE IN THIS DIV; allows for deselect. */}
         <div className="container">
-          <h3 className="center">Speed Scrabble</h3>
-          <button className="btn pink" onClick={newGame}>START GAME</button>
-          <h5 className="right">Game Time: {seconds}</h5>
+          <div className="row">
+            <h4 className="center white-text">Welcome {username}!</h4>
+            <h6 className="left purple-text text-darken-2">{!myScores.scores.length ? null:
+              <>High score: <b>{personalBest()[0]}</b></>}
+            </h6>
+            <h6 className="right purple-text text-darken-2">{!myScores.scores.length ? null:
+              <>Best time: <b>{personalBest()[1]} seconds</b></>}
+            </h6>
+          </div>
         </div>
-          {/* <button onClick={seeSelected}>SEE SELECTED</button> */}
+          {/* <button onClick={personalBest}>SEE PERSONAL BEST</button> */}
           {/* <button onClick={checkWords}>checkWords Test</button> */}
           {/* <button onClick={seeScores}>SEE SCORES TEST</button> */}
-          <br></br>
           
           {/* GAME */}
           <div className="row white" id="gameRow">
             
             {/* MY HAND + TILESWAP */}
-            <div className="col s12 m12 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
-              <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
-                <h5>TILE SWAP</h5>
+            <div className="col s12 m12 l6 center">
+              <div className="col m1 l1">{/*Empty col 1*/}</div>
+              <div className="col s12 m10 l10 center">
+                <button className={isRunning ? "waves-effect btn-large pink left disabled":"waves-effect btn-large pink left"} onClick={newGame}><b>START</b></button>
+                <h5 style={{display:"inline"}}>Game Time: {seconds}</h5>
+                <button className={isRunning ? "waves-effect btn-large blue right" : "waves-effect btn-large black right disabled"} onClick={readWords}><b>DONE</b></button>
+              </div>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+              <div className="col s4 m4 l5 center">
+                {/* <h5>TILE SWAP</h5> */}
                 <div id="swapTile" className="valign-wrapper"
                   data-swap="tileSwap"
                   onDrop={swapOneTile}
@@ -629,34 +661,29 @@ const SpeedScrabble = () => {
                 ><h5 className="white-text center">{swapCount ? `TILE SWAP (${swapCount})` : "OUT OF SWAPS"}</h5>
                 </div>
               </div>
-              <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
-                <h5>{username.toUpperCase()}'S HAND</h5>
-                {handLetters.map((tile, index)=>
-                  <div 
-                    draggable={!handUsed[index]}
-                    onDragStart={dragStart}
-                    onDragOver={dragOver}
-                    onTouchStart={touchStart} //touching a tile SELECTS it.
-                    data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
-                    id="handTile"
-                    className="center" 
-                    style={!handUsed[index] ? {backgroundColor: (selectedTile==tile+index && !selectedSpace) ? "green":"red", margin:"2px", padding:"1vw",
-                            width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset", touchAction: "none"}
-                          :{backgroundColor: "grey", margin:"2px",padding:"1vw",
-                            width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset", touchAction: "none"}}>
-                    <h5 className="white-text">{tile}</h5>
-                  </div>)}
+              <div className="col s8 m8 l7 center" style={{padding:"0px 0px 0px 0px"}}>
+                {/* <h5>{username.toUpperCase()}'S HAND</h5> */}
+                <div id="myHand">
+                  {handLetters.map((tile, index)=>
+                    <div 
+                      draggable={!handUsed[index]}
+                      onDragStart={dragStart}
+                      onDragOver={dragOver}
+                      onTouchStart={touchStart} //touching a tile SELECTS it.
+                      data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
+                      id="handTile"
+                      className="center" 
+                      style={!handUsed[index] ? {backgroundColor: (selectedTile==tile+index && !selectedSpace) ? "green":"red", margin:"2px", padding:"1vw",
+                              width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset", touchAction: "none"}
+                            :{backgroundColor: "grey", margin:"2px",paddingTop:"1vw",
+                              width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset", touchAction: "none"}}>
+                      <h5 className="white-text">{tile}</h5>
+                    </div>)}
+                  </div>
               </div>
-
-              <div className="center">
-                <h5 id="gameDone"></h5>
-                <h6 id="wordsSubmitted"></h6>
-                <h6 id="letterScore"></h6>
-                <h6 id="wordBonus"></h6>
-                <h6 id="formationScore"></h6>
-                <h6 id="timeTaken"></h6>
-                <h6 id="finalScore"></h6>
-              </div>
+              <br/>
+              {/* RESULTS */}
+              {renderResults}
             </div>
 
             {/* GRID BOARD */}
@@ -686,12 +713,7 @@ const SpeedScrabble = () => {
                 </div>
               ))}
             </div>
-            
-            {/* DONE BUTTON */}
-            <div className="col s12 m12 l1 center">
-              <br></br>
-              <button className="btn-large black" onClick={readWords}>DONE</button>
-            </div>
+
           </div> {/* END GAME CONTAINER */}
           
           {/* SCORE HISTORY TABLE */}
@@ -701,7 +723,7 @@ const SpeedScrabble = () => {
                   <tr className="blue lighten-4 blue-grey-text text-darken-4">
                     {/* <th>Game #</th> */}
                     <th>Date</th>
-                    <th>Formation Score</th>
+                    <th>Board Score</th>
                     <th>Time</th>
                     <th>Final Score</th>
                     <th>Words</th>

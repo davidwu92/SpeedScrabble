@@ -22,6 +22,8 @@ const Leaderboards = () => {
 
 
   return (
+    <>
+    <h1 className="center white-text">TOP 10 Leaderboard</h1>
     <div className="row center">
       <table className="centered responsive-table">
         <thead>
@@ -48,6 +50,7 @@ const Leaderboards = () => {
         </tbody>
       </table>
     </div>
+    </>
   )
 }
 export default Leaderboards

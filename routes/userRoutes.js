@@ -2,6 +2,9 @@ const { User } = require('../models')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 
+const BCRYPT_SALT_ROUNDS = 12
+const bcrypt = require('bcrypt')
+
 const passportFacebook = require('passport-facebook')
 const FacebookStrategy = passportFacebook.Strategy
 
@@ -9,24 +12,67 @@ const FacebookStrategy = passportFacebook.Strategy
 module.exports = app => {
   // Register new user
   app.post('/users', (req, res) => {
-      const { username, email } = req.body
+      const { username, email, resetPasswordToken, resetPasswordExpires, password } = req.body
       const scores = []
       //setting default preferences here.
-      User.register(new User({username, email, scores}), req.body.password,
-        e=>{
-          if (e){console.error(e)}
-          res.sendStatus(200)
+      // User.register(new User({username, email, scores}), req.body.password,
+      //   e=>{
+      //     if (e){console.error(e)}
+      //     res.sendStatus(200)
+      //   }
+      // )
+      bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
+        if (password === '') {
+          res.send('password cant be left blank')
+        } else if (password.length <= 3) {
+          res.send('need more')
+        } else {
+          User.create({
+            email,
+            username,
+            password: hashedPassword,
+          })
+            .then(() => res.sendStatus(200))
+            .catch(e => {
+              if (e) {
+                res.json({
+                  success: false,
+                  message: 'Your account could not be saved. Error: ',
+                  e
+                })
+              }
+            })
         }
-      )
+      })
   })
   
   // Login route
   app.post('/login', (req, res) => {
-    User.authenticate()(req.body.username, req.body.password, (e, user)=>{
-      if(e){console.error(e)}
-      res.json(user ? {token: jwt.sign({id:user._id}, process.env.SECRET)
-      } : user)
-    })
+    User.findOne({ username: req.body.username })
+      .then(user => {
+        if (user === null) {
+          console.log('no user')
+          res.sendStatus(200)
+          return
+        }
+        bcrypt.compare(req.body.password, user.password).then(response => {
+          if (response !== true) {
+            console.log('passwords do not match')
+            res.sendStatus(200)
+            return 
+          }
+          console.log('user found & authenticated')
+          res.json({
+            token: jwt.sign({ id: user._id }, process.env.SECRET)
+          })
+          return 
+        })
+      })
+    // User.authenticate()(req.body.username, req.body.password, (e, user)=>{
+    //   if(e){console.error(e)}
+    //   res.json(user ? {token: jwt.sign({id:user._id}, process.env.SECRET)
+    //   } : user)
+    // })
   })
 
   //GET USER INFO (for login)

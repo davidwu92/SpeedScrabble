@@ -16,7 +16,9 @@ const RegisterForm = () => {
   const [registerState, setRegisterState] = useState({
     username: '',
     email: '',
-    password: ''
+    password: '',
+    resetPasswordExpires: '',
+    resetPasswordToken: ''
   })
 
   registerState.handleInputChange = (event) => {
@@ -38,6 +40,8 @@ const RegisterForm = () => {
       username: registerState.username,
       email: registerState.email,
       password: registerState.password,
+      resetPasswordToken: '',
+      resetPasswordExpires: ''
     })
       .then(({ data }) => {
         if (data === "OK") {

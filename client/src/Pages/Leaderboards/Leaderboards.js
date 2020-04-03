@@ -12,6 +12,7 @@ const Leaderboards = () => {
   useEffect(() => {
     allScores()
       .then(({ data }) => {
+        console.log(data)
         setLeaderBoard({ ...leaderBoard, score: data})
       })
       .catch(e => console.error(e))
@@ -20,15 +21,32 @@ const Leaderboards = () => {
   console.log(leaderBoard.score.map(obj => obj.userLink))
 
 
-  return(
-    <div>
-    <h1>Leaderboards Page</h1>
-    {leaderBoard.score.map(obj => 
-      <>
-      <p>{obj.userLink.username}</p>
-      <p>{obj.score}</p>
-      </>
-      )}
+  return (
+    <div className="row center">
+      <table className="centered responsive-table">
+        <thead>
+          <tr className="blue lighten-4 blue-grey-text text-darken-4">
+            {/* <th>Game #</th> */}
+            <th>Player</th>
+            <th>Board Score</th>
+            <th>Time</th>
+            <th>Final Score</th>
+            <th>Words</th>
+          </tr>
+        </thead>
+        <tbody>
+          {leaderBoard.score.map((object, index) => (
+                <tr>
+                  {/* <td>{index+1}</td> */}
+                  <td>{object.userLink.username}</td>
+                  <td>{object.formationScore}</td>
+                  <td>{object.time} seconds</td>
+                  <td>{object.score}</td>
+                  <td>{object.words}</td>
+                </tr>
+              ))}
+        </tbody>
+      </table>
     </div>
   )
 }

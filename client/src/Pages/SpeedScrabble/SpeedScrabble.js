@@ -20,6 +20,7 @@ const SpeedScrabble = () => {
   const [myScores, setMyScores]=useState({scores: []})
   let token = JSON.parse(JSON.stringify(localStorage.getItem("token")))
   let userId = JSON.parse(JSON.stringify(localStorage.getItem("userId")))
+//get username
   useEffect(()=>{
     getUser(token)
       .then(({data})=>{
@@ -31,7 +32,6 @@ const SpeedScrabble = () => {
   useEffect(()=>{
     getScores(userId)
       .then(({data})=>{
-        console.log(data)
         let pastScores = []
         data.forEach(scoreObj=>{
           let object = {
@@ -83,17 +83,18 @@ const SpeedScrabble = () => {
   const allowDrop = e=>e.preventDefault()
   
   //HAND or GRID: Starting to drag a tile.
-  const dragStart = (e) => {
+  const dragStart = (e) => { //MOUSE EVENTS
     //Tiles in hand have dataset.tile for LETTER + Hand Num
     //Tiles placed on board have dataset.tile AND dataset.coordinates
     e.dataTransfer.setData("tile", e.target.dataset.tile)
     e.dataTransfer.setData("coordinates", e.target.dataset.coordinates)
   }
+
   //HAND or GRID: Allow things to drag over.
   const dragOver = e => e.stopPropagation()
-  
+
   //GRID: dropping tiles onto grid (from anywhere)
-  const dropTile = e => { //e represents the grid event of DROPPING A TILE.
+  const dropTile = e => { //e represents the grid's mouse event of DROPPING A TILE.
     e.preventDefault()
     let tileData = e.dataTransfer.getData("tile") //LETTER+HANDNUM of dragged tile.
     let dropPosition = e.target.dataset.coordinates
@@ -134,13 +135,16 @@ const SpeedScrabble = () => {
       {autoClose: 5000,hideProgressBar: true,type: "error"})
     }
   }
-  //GRID: onClick check grid space info.
+
+  //GRID: onClick check grid space info. Not used atm.
   const seeData = (e)=>{
-    console.log("dataset.tile: " +e.target.dataset.tile)
-    console.log("dataset.coordinates: "+e.target.dataset.coordinates)
+    // console.log(e.nativeEvent)
+    // console.log("dataset.tile: " +e.target.dataset.tile)
+    // console.log("dataset.coordinates: "+e.target.dataset.coordinates)
   }
-  const [swapCount, setSwapCount] = useState(3)
+
   //SWAP BOX: dropping a tile into the swap-tile area.
+  const [swapCount, setSwapCount] = useState(10)
   const swapOneTile = e =>{
     if(swapCount>0){
       e.preventDefault()
@@ -162,7 +166,7 @@ const SpeedScrabble = () => {
       if(tileData[0]==bagLetters[newLetterIndex]){setSeconds(seconds=>seconds+3)}
 
       // console.log(bagLetters[newLetterIndex]+handNum)
-      if(startPosition!="undefined"){
+      if(startPosition!="undefined"){ //if a GRID tile is swapped.
         let newGrid = grid
         newGrid[startPosition[1]][startPosition[0]] = bagLetters[newLetterIndex]+handNum
         setGrid(JSON.parse(JSON.stringify(newGrid)))
@@ -172,28 +176,152 @@ const SpeedScrabble = () => {
         :<>You swapped your "{tileData[0]}" for {"AEFHILMNORSX".includes(bagLetters[newLetterIndex])? <>an "{bagLetters[newLetterIndex]}".</>:<>a "{bagLetters[newLetterIndex]}".</>}<br/>3 second penalty applied.</>}</>,
       {autoClose: 5000,hideProgressBar: true,type: "success"})
     }
+    else { //you're out of swaps.
+      toast("You ran out of swaps!", {autoClose:3000, hideProgressBar: true, type:"error"})
+    }
+  }
+  const touchSwapTile = () =>{
+    if(swapCount>0){
+      setSwapCount(swapCount=>swapCount-1)
+      let handNum = selectedTile[2] ? parseInt(""+selectedTile[1]+selectedTile[2]):parseInt(selectedTile[1])
+      let bagLetters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
+      //take out my hand's letters from the bag.
+      handLetters.forEach(letter=> bagLetters = bagLetters.replace(letter, ""))
+      //pick a letter from the remaining letters to replace the swapped tile.
+      let newLetterIndex = Math.floor(Math.random()*(98-handLetters.length))
+      let newHand = handLetters
+      newHand[handNum] = bagLetters[newLetterIndex] //this is new letter.
+      setHandLetters(JSON.parse(JSON.stringify(newHand)))
+
+      //time penalty
+      if(selectedTile[0]==bagLetters[newLetterIndex]){setSeconds(seconds=>seconds+3)}
+
+      if(selectedSpace){ //if a GRID tile is swapped.
+        let newGrid = grid
+        newGrid[selectedSpace[1]][selectedSpace[0]] = bagLetters[newLetterIndex]+handNum
+        setGrid(JSON.parse(JSON.stringify(newGrid)))
+      }
+      toast(<>{selectedTile[0]==bagLetters[newLetterIndex]? 
+        <>You swapped your "{selectedTile[0]}" for another "{bagLetters[newLetterIndex]}".<br/>No time penalty applied.</>
+        :<>You swapped your "{selectedTile[0]}" for {"AEFHILMNORSX".includes(bagLetters[newLetterIndex])? <>an "{bagLetters[newLetterIndex]}".</>:<>a "{bagLetters[newLetterIndex]}".</>}<br/>3 second penalty applied.</>}</>,
+      {autoClose: 5000,hideProgressBar: true,type: "success"})
+      setSelectedTile("")
+      setSelectedSpace("")
+    } else { //you're out of swaps.
+      toast("You ran out of swaps!", {autoClose:3000, hideProgressBar: true, type:"error"})
+      setSelectedTile("")
+      setSelectedSpace("")
+    }
+  }
+//TOUCH FUNCTIONS~~~
+  const [selectedTile, setSelectedTile]= useState("")
+  const [selectedSpace, setSelectedSpace]=useState("")
+  const touchStart = (e) =>{ //TOUCH EVENTS
+    e.stopPropagation()
+    let swapDataSet = e.currentTarget.dataset.swap
+    let tileDataSet = e.currentTarget.dataset.tile
+    let gridDataSet = e.currentTarget.dataset.coordinates
+    if(!selectedTile){ //No tile is currently selected.
+      if(tileDataSet && tileDataSet!="Null"){ //You are SELECTING A TILE...
+        if(!gridDataSet){ //...from your hand...
+          let handNum = tileDataSet[2] ? parseInt(""+tileDataSet[1]+tileDataSet[2]):parseInt(tileDataSet[1])
+          if (!handUsed[handNum]){ //...that is unused.
+            // console.log("You are selecting an unused tile from your hand.")
+            setSelectedTile(tileDataSet)
+            setSelectedSpace(gridDataSet)
+          } else { //...that HAS been used; can't be selected.
+            // console.log("You can't select a tile from your hand that's already been placed on the board.")
+          }
+        } else {//...that's on the grid.
+          // console.log("You are selecting a tile on the board.")
+          setSelectedTile(tileDataSet)
+          setSelectedSpace(gridDataSet)
+        }
+      } else { //You just clicked something w/o selecting a tile.
+        // console.log("You touched a space without selecting a tile.")
+      }
+    }
+    else { //a tile is currently selected.
+      if(!selectedSpace){ //if the already-selected tile is in my hand...
+          if(tileDataSet && !gridDataSet){ //...and we click another hand tile (reselect from hand)
+            setSelectedTile(tileDataSet)
+            setSelectedSpace(gridDataSet)
+          }
+          else if(tileDataSet=="Null"){ //...and we select an empty grid space.
+            // console.log("You are moving a hand tile to an empty space.")
+            let handNum = selectedTile[2] ? parseInt(""+selectedTile[1]+selectedTile[2]):parseInt(selectedTile[1])
+            let updateHand = handUsed
+            updateHand[handNum] = true //show that the selected tile is USED.
+            setHandUsed(JSON.parse(JSON.stringify(updateHand)))
+            let newGrid = grid
+            newGrid[gridDataSet[1]][gridDataSet[0]] = selectedTile //set grid string to selected tile.
+            setGrid(JSON.parse(JSON.stringify(newGrid)))
+            setSelectedTile("")
+            setSelectedSpace("")
+          }
+          else if(swapDataSet=="tileSwap"){ //...and we select tile swap.
+            // console.log(`You want to swap out ${selectedTile}`)
+            touchSwapTile()
+          } else { //...and we tap any other space.
+            // console.log(`Deselecting ${selectedTile}`)
+            setSelectedTile("")
+            setSelectedSpace("")
+          }
+      }
+      else { //if the already-selected tile is on the board...
+        if(tileDataSet=="Null"){ //...and we tap an empty space.
+          // console.log("You are moving a grid tile to an empty space.")
+          let newGrid = grid
+          newGrid[gridDataSet[1]][gridDataSet[0]] = selectedTile
+          newGrid[selectedSpace[1]][selectedSpace[0]]="Null"
+          setGrid(JSON.parse(JSON.stringify(newGrid)))
+          setSelectedTile("")
+          setSelectedSpace("")
+        } else if (gridDataSet){ //...and we tap another grid tile.
+          // console.log("You are swapping two grid tile positions.")
+          let newGrid = grid
+          newGrid[gridDataSet[1]][gridDataSet[0]] = selectedTile
+          newGrid[selectedSpace[1]][selectedSpace[0]]=tileDataSet
+          setGrid(JSON.parse(JSON.stringify(newGrid)))
+          setSelectedTile("")
+          setSelectedSpace("")
+        } else if (swapDataSet){ //...and we tap on swap space.
+          // console.log("You want to swap a grid tile out.")
+          touchSwapTile()
+          setSelectedTile("")
+          setSelectedSpace("")
+        } else { //...and we tap any other space.
+          // console.log(`Deselecting ${selectedTile}`)
+          setSelectedTile("")
+          setSelectedSpace("")
+        }
+      }
+      
+    }
   }
 
+  // const seeSelected = () =>{
+  //   console.log("Selected Tile: "+selectedTile)
+  //   console.log("Selected Space: "+selectedSpace)
+  // }
 
 //MY HAND
   //Letters in my hand.
-  const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "S", "T", "A", "R", "T","!"])
+  const [handLetters, setHandLetters] = useState(["~","P", "R", "E", "S", "S", "~", "S", "T", "A", "R", "T"])
   //Used Letters from my hand.
   const [handUsed, setHandUsed] = useState([true,true,true,true,true,true,true,true,true,true,true,true,])
-  //Starting Hand tracked for final score?
-  const [startingHand, setStartingHand] = useState("")
 
   //currently not using this.
-  const shuffleHand = () =>{
-    console.log("SHUFFLE HAND")
-    //time penalty: 3 seconds.
-    setSeconds(seconds=>seconds+3)
-  }
+  // const shuffleHand = () =>{
+  //   console.log("SHUFFLE HAND")
+  //   //time penalty: 3 seconds.
+  //   setSeconds(seconds=>seconds+3)
+  // }
 
 //NEW GAME BUTTON
   const newGame = () =>{
     //Start Timer from zero, reset grid, deal tiles for hand.
-    setSwapCount(3)
+    setSwapCount(10)
     setSeconds(0)
     setIsRunning(true)
     setGrid([ ["Null","Null","Null","Null","Null","Null","Null","Null","Null","Null"],
@@ -218,7 +346,6 @@ const SpeedScrabble = () => {
       newHand.push(scrabbleLetters[letterNumber])
     }
     setHandLetters(newHand)
-    setStartingHand(newHand.join(''))
     setHandUsed([false,false,false,false,false,false,false,false,false,false,false,false])
   }
 
@@ -237,7 +364,7 @@ const SpeedScrabble = () => {
 
     let tilePositions = [] //["rowNum+colNum", ...]
 
-    //GET ALL HORIZONTAL WORDS
+    //GETTING HORIZONTAL WORDS
     let xWordsFound = [] //xWordsFound = [["rowNum+colNum+letter+handNum", ],[],[]]
     grid.forEach((row, rowNum)=>{
       let nullIndex = -1
@@ -388,7 +515,7 @@ const SpeedScrabble = () => {
           {autoClose: 5000,hideProgressBar: true,type: "error"})
         } else if (notWord.length > 2){
           setSeconds(seconds=>5*notWord.length+seconds)
-          toast(<>You submitted {notWord.length} illegal words: {notWord.slice(0, notWord.length-1).join(", ")} and {notWord[notWord.length-1]}.<br/>
+          toast(<>You submitted {notWord.length} illegal words: {notWord.slice(0, notWord.length-1).join(", ")}, and {notWord[notWord.length-1]}.<br/>
                   {5*notWord.length} second penalty added.</>, 
           {autoClose: 5000,hideProgressBar: true,type: "error"})
         } else { //ALL WORDS ARE LEGAL.
@@ -402,11 +529,6 @@ const SpeedScrabble = () => {
   const scoreWords = (yesWord) => {
     setIsRunning(false)
     let word = yesWord.join('')
-    // console.log(word)
-    // const scrabble = {
-    //   a: 1,    b: 3,    c: 3,    d: 2,    e: 1,    f: 4,    g: 2,    h: 4,    i: 1,
-    //   j: 8,    k: 5,    l: 1,    m: 3,    n: 1,    o: 1,    p: 3,    q: 10,   r: 1,
-    //   s: 1,    t: 1,    u: 1,    v: 4,    w: 4,    x: 8,    y: 4,    z: 10    }
     const newLetterValues = { //no points worth more than 8.
       a: 5,    b: 6,    c: 6,    d: 5,    e: 5,    f: 6,    g: 5,    h: 6,    i: 5,
       j: 8,    k: 7,    l: 5,    m: 6,    n: 5,    o: 5,    p: 6,    q: 8,   r: 5,
@@ -419,27 +541,27 @@ const SpeedScrabble = () => {
     let wordBonus = 0
     yesWord.forEach(word=>wordBonus = wordBonus + word.length*word.length)
     document.getElementById("gameDone").innerText="RESULTS"
-    console.log("Your Words:")
-    console.log(yesWord.join(", "))
-    document.getElementById("wordsSubmitted").innerText="Words Submitted: " + yesWord.join(", ")
-    console.log("Letter Value Total: ")
-    console.log(letterSum)
+    // console.log("Your Words:")
+    // console.log(yesWord.join(", "))
+    document.getElementById("wordsSubmitted").innerText="Words Submitted: " + yesWord.join(", ").toUpperCase()
+    // console.log("Letter Value Total: ")
+    // console.log(letterSum)
     document.getElementById("letterScore").innerText="Letter Score: "+letterSum
-    console.log("Word Length Bonus: ")
-    console.log(wordBonus)
+    // console.log("Word Length Bonus: ")
+    // console.log(wordBonus)
     document.getElementById("wordBonus").innerText="Word Length Bonus: "+wordBonus
     let formationScore = letterSum + wordBonus
-    console.log("Formation Score: ")
-    console.log(letterSum + wordBonus)
-    document.getElementById("formationScore").innerText="Formation Score: "+formationScore
-    console.log("Time:")
-    console.log(seconds)
+    // console.log("Formation Score: ")
+    // console.log(letterSum + wordBonus)
+    document.getElementById("formationScore").innerText="Board Score: "+formationScore
+    // console.log("Time:")
+    // console.log(seconds)
     document.getElementById("timeTaken").innerText="Time: "+seconds + " seconds"
     
-    let score = Math.floor(10*((letterSum + wordBonus)-(Math.sqrt(seconds))))/10
+    let score = Math.floor(10*((letterSum + wordBonus)-(5*Math.sqrt(seconds))))/10
     console.log("Final Score: ")
     console.log(score)
-    document.getElementById("finalScore").innerText="Final Score:" + score
+    document.getElementById("finalScore").innerText="Final Score: " + score
     let scores = {
       formationScore: formationScore,
       score: score,
@@ -469,123 +591,160 @@ const SpeedScrabble = () => {
         .catch(e => console.error(e))
   } //end of scoreWords()
   
-  const seeScores = () =>{
-    console.log(myScores)
+  // const seeScores = () =>{
+  //   console.log(myScores)
+  // }
+  const personalBest = () =>{
+    let scoresArray = []
+    let timeArray=[]
+    myScores.scores.forEach(object=>{
+      scoresArray.push(object.score)
+      timeArray.push(object.time)
+    })
+    let bestTime = Math.min(...timeArray)
+    let hiScore = Math.max(...scoresArray)
+    return [hiScore, bestTime]
   }
-  
+
+  const renderResults = !isRunning && seconds>0 ? <>
+    <div className="col s12 m12 l12 blue white-text">
+      <h5 id="gameDone" style={{fontWeight:"bold"}}></h5>
+      <h6 id="wordsSubmitted"></h6>
+      <h6 id="letterScore"></h6>
+      <h6 id="wordBonus"></h6>
+      <h6 id="formationScore"></h6>
+      <h6 id="timeTaken"></h6>
+      <h6 id="finalScore" style={{fontWeight:"bold"}}></h6>
+    </div>
+  </> : null
 
   return(
     <>
-      <div className="container">
-        <h3 className="center">Speed Scrabble</h3>
-        <button className="btn pink" onClick={newGame}>START GAME</button>
-        <h5 className="right">Game Time: {seconds}</h5>
-      </div>
-        {/* <button onClick={readWordsTest}>readWords Test</button>
-        <button onClick={checkWords}>checkWords Test</button> */}
-        <button onClick={seeScores}>SEE SCORES TEST</button>
-        <br></br>
-        {/* GAME */}
-        <div className="row white" style={{width: "100%", padding:"1vw 0px 1vw 0px",margin:"0px"}}>
-          
-          {/* MY HAND + TILESWAP */}
-          <div className="col s12 m5 l5" style={{padding:"0px 4px 0px 4px", marginBottom:"10px"}}>
-            <div className="col s4 m4 l4 center" style={{padding:"0px 0px 0px 0px"}}>
-              <h5>TILE SWAP</h5>
-              <div id="swapTile" className="valign-wrapper"
-                onDrop={swapOneTile}
-                onDragOver={allowDrop}
-              ><h5 className="white-text center">{swapCount ? `TILE SWAP (${swapCount})` : "OUT OF SWAPS"}</h5>
-              </div>
-            </div>
-            <div className="col s8 m8 l8 center" style={{padding:"0px 0px 0px 0px"}}>
-              <h5>{username.toUpperCase()}'S HAND</h5>
-              {handLetters.map((tile, index)=>
-                <div 
-                  draggable={!handUsed[index]}
-                  onDragStart={dragStart}
-                  onDragOver={dragOver}
-                  data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
-                  id="handTile"
-                  className="center" 
-                  style={!handUsed[index] ? {backgroundColor: "red", margin:"2px", padding:"1vw",
-                          width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset"}
-                        :{backgroundColor: "grey", margin:"2px",padding:"1vw",
-                          width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset"}}>
-                  <h5 className="white-text">{tile}</h5>
-                </div>)}
-            </div>
-
-            <div className="center row">
-              <h5 id="gameDone"></h5>
-              <h6 id="wordsSubmitted"></h6>
-              <h6 id="letterScore"></h6>
-              <h6 id="wordBonus"></h6>
-              <h6 id="formationScore"></h6>
-              <h6 id="timeTaken"></h6>
-              <h6 id="finalScore"></h6>
-            </div>
+      <div onTouchStart={selectedTile ? touchStart : null}> {/* ENTIRE PAGE IN THIS DIV; allows for deselect. */}
+        <div className="container">
+          <div className="row">
+            <h4 className="center white-text">Welcome {username}!</h4>
+            <h6 className="left purple-text text-darken-2">{!myScores.scores.length ? null:
+              <>High score: <b>{personalBest()[0]}</b></>}
+            </h6>
+            <h6 className="right purple-text text-darken-2">{!myScores.scores.length ? null:
+              <>Best time: <b>{personalBest()[1]} seconds</b></>}
+            </h6>
           </div>
-
-          {/* GRID BOARD */}
-          <div className="col s12 m6 l6 center">
-            {grid.map((row, rowNum)=>(
-              <div id="gridRow" 
-                // className="center"
-              >
-                {row.map((square, colNum)=>
-                  (<div className="gridSquare" 
-                        draggable={square=="Null"? false : true}
-                        onDragStart={dragStart}
-                        onDrop={dropTile}
-                        onDragOver={allowDrop}
-                        onClick={seeData}
-                        id="gridSquare"
-                        data-tile={square} //dataset.tile = LETTER+HAND NUMBER or "NULL"
-                        data-coordinates={""+colNum+rowNum}
-                        style={{backgroundColor: square=="Null"? "floralwhite":"red", width:"4vw", height:"4vw", padding:"1vw",
-                              display:"inline-block", borderStyle: square=="Null"?"dashed":"outset", borderWidth:"1px"}}>
-                      <h5 data-tile={square} data-coordinates={""+colNum+rowNum} className="center white-text"
-                          style={square=="Null"? {visibility:"hidden"}:{visibility:"visible"}}>
-                          {square[0]}</h5>
-                    </div>))}
-              </div>
-            ))}
-          </div>
-          
-          <div className="col s12 m1 l1 center">
-            <button className="btn-large black" onClick={readWords}>DONE</button>
-          </div>
-        </div> {/* END GAME CONTAINER */}
-        
-        <div className="row center">
-            <table className="centered responsive-table">
-              <thead>
-                <tr className="blue lighten-4 blue-grey-text text-darken-4">
-                  {/* <th>Game #</th> */}
-                  <th>Date</th>
-                  <th>Formation Score</th>
-                  <th>Time</th>
-                  <th>Final Score</th>
-                  <th>Words</th>
-                </tr>
-              </thead>
-              <tbody>
-                  {
-                    myScores.scores.length ? myScores.scores.map((object, index)=>
-                      <tr>
-                        {/* <td>{index+1}</td> */}
-                        <td>{object.date}</td>
-                        <td>{object.formationScore}</td>
-                        <td>{object.time} seconds</td>
-                        <td>{object.score}</td>
-                        <td>{object.words}</td>
-                      </tr>) : null
-                  }
-              </tbody>
-            </table>
         </div>
+          {/* <button onClick={personalBest}>SEE PERSONAL BEST</button> */}
+          {/* <button onClick={checkWords}>checkWords Test</button> */}
+          {/* <button onClick={seeScores}>SEE SCORES TEST</button> */}
+          
+          {/* GAME */}
+          <div className="row white" id="gameRow">
+            
+            {/* MY HAND + TILESWAP */}
+            <div className="col s12 m12 l6 center">
+              <div className="col m1 l1">{/*Empty col 1*/}</div>
+              <div className="col s12 m10 l10 center">
+                <button className={isRunning ? "waves-effect btn-large pink left disabled":"waves-effect btn-large pink left"} onClick={newGame}><b>START</b></button>
+                <h5 style={{display:"inline"}}>Game Time: {seconds}</h5>
+                <button className={isRunning ? "waves-effect btn-large blue right" : "waves-effect btn-large black right disabled"} onClick={readWords}><b>DONE</b></button>
+              </div>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+              <div className="col s4 m4 l5 center">
+                {/* <h5>TILE SWAP</h5> */}
+                <div id="swapTile" className="valign-wrapper"
+                  data-swap="tileSwap"
+                  onDrop={swapOneTile}
+                  onDragOver={allowDrop}
+                  onTouchStart={touchStart}
+                ><h5 className="white-text center">{swapCount ? `TILE SWAP (${swapCount})` : "OUT OF SWAPS"}</h5>
+                </div>
+              </div>
+              <div className="col s8 m8 l7 center" style={{padding:"0px 0px 0px 0px"}}>
+                {/* <h5>{username.toUpperCase()}'S HAND</h5> */}
+                <div id="myHand">
+                  {handLetters.map((tile, index)=>
+                    <div 
+                      draggable={!handUsed[index]}
+                      onDragStart={dragStart}
+                      onDragOver={dragOver}
+                      onTouchStart={touchStart} //touching a tile SELECTS it.
+                      data-tile={tile+index} //dataset.tile = LETTER+HAND NUMBER
+                      id="handTile"
+                      className="center" 
+                      style={!handUsed[index] ? {backgroundColor: (selectedTile==tile+index && !selectedSpace) ? "green":"red", margin:"2px", padding:"1vw",
+                              width:"4vw", height:"4vw",display:"inline-block", borderStyle:"outset", touchAction: "none"}
+                            :{backgroundColor: "grey", margin:"2px",paddingTop:"1vw",
+                              width:"4vw", height:"4vw", display:"inline-block", borderStyle:"inset", touchAction: "none"}}>
+                      <h5 className="white-text">{tile}</h5>
+                    </div>)}
+                  </div>
+              </div>
+              <br/>
+              {/* RESULTS */}
+              {renderResults}
+            </div>
 
+            {/* GRID BOARD */}
+            <div className="col s12 m12 l6 center" id="gridBoardRow">
+              {grid.map((row, rowNum)=>(
+                <div id="gridRow" 
+                  // className="center"
+                >
+                  {row.map((square, colNum)=>
+                    (<div className="gridSquare" 
+                          draggable={square=="Null"? false : true}
+                          onDragStart={dragStart}
+                          onDrop={dropTile}
+                          onDragOver={allowDrop}
+                          onTouchStart={touchStart}
+                          onClick={seeData}
+                          id="gridSquare"
+                          data-tile={square} //dataset.tile = LETTER+HAND NUMBER or "NULL"
+                          data-coordinates={""+colNum+rowNum}
+                          style={{backgroundColor: square=="Null"? "floralwhite": (selectedTile==square && selectedSpace) ? "green":"red",
+                                width:"4vw", height:"4vw", padding:"1vw", display:"inline-block", 
+                                borderStyle: square=="Null"?"dashed":"outset", borderWidth:"1px", borderColor: square=="Null"?"goldenrod":null,touchAction: "none"}}>
+                        <h5 data-tile={square} data-coordinates={""+colNum+rowNum} className="center white-text"
+                            style={square=="Null"? {visibility:"hidden"}:{visibility:"visible"}}>
+                            {square[0]}</h5>
+                      </div>))}
+                </div>
+              ))}
+            </div>
+
+          </div> {/* END GAME CONTAINER */}
+          
+          {/* SCORE HISTORY TABLE */}
+          <div className="row center">
+              <table className="centered responsive-table">
+                <thead>
+                  <tr className="blue lighten-4 blue-grey-text text-darken-4">
+                    {/* <th>Game #</th> */}
+                    <th>Date</th>
+                    <th>Board Score</th>
+                    <th>Time</th>
+                    <th>Final Score</th>
+                    <th>Words</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {
+                      myScores.scores.length ? myScores.scores.map((object, index)=>
+                        <tr>
+                          {/* <td>{index+1}</td> */}
+                          <td>{object.date}</td>
+                          <td>{object.formationScore}</td>
+                          <td>{object.time} seconds</td>
+                          <td>{object.score}</td>
+                          <td>{object.words}</td>
+                        </tr>) : null
+                    }
+                </tbody>
+              </table>
+          </div>
+      </div>
     </>
   )
 }

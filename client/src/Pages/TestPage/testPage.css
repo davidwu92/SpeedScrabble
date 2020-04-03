@@ -1,15 +1,10 @@
 /* TILES AND LETTERS ARE h5 */
-h5 {
+/* h5 {
   margin:0px
-}
-
-#gameRow {
-  width: 100%;
-  padding: 1vw 0px 1vw 0px;
-}
+} */
 
 /* SMALL SCREEN STYLING */
-@media only screen 
+/* @media only screen 
 and (min-device-width : 300px) 
 and (max-device-width : 600px){
   #handTile, #gridSquare{
@@ -27,51 +22,46 @@ and (max-device-width : 600px){
     width: 18vw !important;
     height: 18vw !important;
     position: relative;
-    padding:1vw;
+    padding:3vw;
     left: 25%;
   }
   h5{
     font-size: medium;
     margin: 2px;
   }
-}
+} */
+
 /* MEDIUM SCREEN STYLING */
-@media only screen 
+/* @media only screen 
 and (min-device-width : 601px)
 and (max-device-width : 992px){
-  #myHand{
-    max-width: 55vw;
-  }
   #handTile, #gridSquare{
-    width: 8vw !important;
-    height: 8vw !important;
+    width: 8.5vw !important;
+    height: 8.5vw !important;
     padding: 1vw !important;
     margin: 1 !important;
   }
   #gridRow {
-    height: 8vw
+    height: 8.5vw
   }
   #swapTile {
     background-color: limegreen;
     border-style:inset;
-    width: 16vw !important;
-    height: 16vw !important;
+    width: 18vw !important;
+    height: 18vw !important;
     position: relative;
-    padding:1vw;
+    padding:3.5vw;
     left: 25%;
   }
   h5{
     font-size: xx-large;
     margin: 2px;
   }
-}
+} */
 
 /* LARGE SCREEN STYLING */
-@media only screen 
+/* @media only screen 
 and (min-device-width : 993px){
-  #myHand{
-    max-width: 27vw;
-  }
   #handTile #gridSquare {
     width: 4vw !important;
     height: 4vw !important;
@@ -79,16 +69,13 @@ and (min-device-width : 993px){
   #gridRow {
     height: 4vw
   }
-  #gridBoardRow{
-    width: 46%
-  }
   #swapTile {
     background-color: limegreen;
     border-style:inset;
-    width: 9vw !important;
-    height: 9vw !important;
+    width: 8vw !important;
+    height: 8vw !important;
     position: relative;
     padding:1vw;
     left: 25%;
   }
-}
+} */

@@ -79,7 +79,7 @@ const Login = () => {
           <br></br>
           <br></br>
           <h6><Link to="/register">CREATE AN ACCOUNT</Link></h6>
-          {/* <h6><Link to="/forgotPassword">Forgot Password?</Link></h6> */}
+          <h6><Link to="/forgotPassword">FORGOT PASSWORD?</Link></h6>
         </div>
       </form>
     </div>

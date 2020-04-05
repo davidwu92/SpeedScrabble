@@ -1,10 +1,11 @@
 import React from 'react'
+import './help.css'
 
 const Help = () => {
   return(
-    <div className="container">
+    <>
       <h1 className="center white-text">Help Section</h1>
-      <div className="row green white-text">
+      <div className="row green white-text" id="helpRow">
         <h4 className="center">Speed Scrabble Rules</h4>
         <li>Objective: Use all the tiles in your hand to create a single crossword formation of English words!</li>
         <li>Once START is clicked, the timer begins and you are dealt a new hand of 12 letter tiles. Drag and drop those tiles into the grid to make your crossword.</li>
@@ -14,7 +15,7 @@ const Help = () => {
         <li>Once you've finished your crossword, hit "DONE" to finish the game.</li>
       </div>
 
-      <div className="row red white-text">
+      <div className="row red white-text" id="helpRow">
         <h4 className="center">Scoring Factors</h4>
         <h6 className="center">Your score is calculated from three factors: your Letter Score, Word Length Bonus, and time taken.</h6>
         <br/>
@@ -48,7 +49,7 @@ const Help = () => {
         <li></li>
       </div>
 
-      <div className="row blue white-text">
+      <div className="row blue white-text" id="helpRow">
         <h4 className="center">Time Penalties</h4>
         <h6 className="center">Time Penalties will be applied for the following actions:</h6>
         <h6>1. Using a letter swap and getting a new letter (3-second penalty).
@@ -59,7 +60,7 @@ const Help = () => {
         </h6>
       </div>
 
-    </div>
+  </>
   )
 }
 

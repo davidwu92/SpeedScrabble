@@ -1,0 +1,28 @@
+/* SMALL SCREEN */
+@media only screen 
+and (min-device-width : 300px) 
+and (max-device-width : 600px){
+  #helpRow {
+    padding: 1vw 5vw 1vw 5vw;
+    margin: 0
+  }
+}
+
+/* MEDIUM SCREEN STYLING */
+@media only screen 
+and (min-device-width : 601px)
+and (max-device-width : 992px){
+  #helpRow {
+    padding: 2vw 10vw 2vw 10vw;
+    margin: 0
+  }
+}
+
+/* LARGE SCREEN STYLING */
+@media only screen 
+and (min-device-width : 993px){
+  #helpRow {
+    padding: 2vw 15vw 2vw 15vw;
+    margin: 0
+  }
+}

@@ -12,7 +12,7 @@ import Register from './Pages/Register'
 import SpeedScrabble from './Pages/SpeedScrabble'
 import Leaderboards from './Pages/Leaderboards'
 import Help from './Pages/Help'
-import TestPage from './Pages/TestPage'
+// import TestPage from './Pages/TestPage'
 import Multiplayer from './Pages/Multiplayer'
 import ForgotPassword from './Pages/ForgotPassword'
 import ResetPassword from './Pages/ResetPassword'
@@ -63,14 +63,7 @@ function App() {
           <Help/>
         </Route>
       </Switch>
-      
-      <Switch>
-        <Route exact path="/test">
-          <LoggedInNav/>
-          <TestPage/>
-        </Route>
-      </Switch>
-
+    
       <Switch>
         <Route exact path="/forgotPassword">
           <Navbar/>
